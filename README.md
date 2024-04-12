@@ -4,9 +4,7 @@
 
 The RAG Genie, an LLM RAG prototype to test and evaluate your embeddings, chun splitting strategies using Q&A and evaluations. 
 
-We welcome contributions to this Angular/Java enabled Spring Boot project! 
-
-https://github.com/stephanj/rag-genie/assets/179457/8bf4b54e-bb29-4693-a377-e27f9a0f8779
+https://github.com/stephanj/rag-genie/assets/179457/e154a2ba-b031-4c62-adb4-fc87c7d448da
 
 ## Contribute
 
