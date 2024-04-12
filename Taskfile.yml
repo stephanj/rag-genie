@@ -1,0 +1,349 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+# .env is required only in `backend:start` but we cannot (yet) load it at the task level
+# ref https://github.com/go-task/task/issues/1362
+# .env overrides .env.default
+dotenv: [ '.env', '.env.default' ]
+
+vars:
+  OUTPUT_DIR: './target'
+  NODE_DIR: './node'
+  NODE_MODULES_DIR: './node_modules'
+
+includes:
+  docker: './tasks/Taskfile.docker.yml'
+  java: './tasks/Taskfile.java.yml'
+  node: './tasks/Taskfile.node.yml'
+  postgresql: './tasks/Taskfile.postgresql.yml'
+
+tasks:
+  default:
+    desc: "📝 List all tasks"
+    cmds:
+      - task -l
+    silent: true
+
+  env:verify:
+    desc: "☑️ Verify the project environment setup"
+    summary: |
+      This task checks that all the required tools and dependencies are installed.
+      If not, it will prompt you to run `task env:setup` to install them.
+    ignore_error: true
+    cmds:
+      - task: java:check
+      - task: node:check
+      - task: postgresql:check
+      - task: docker:is-started
+      - cmd: echo "In case of errors, run 'task env:setup' to install missing tools and dependencies."
+        silent: true
+
+  env:setup:
+    desc: "🛠️Setup the project environment"
+    summary: |
+      This task installs all the required tools and dependencies.
+      It supports Homebrew, SDKMAN, and ASDF to manage the tools.
+    cmds:
+      - task: java:install
+      - task: node:install
+      - task: postgresql:install
+      - task: db:start
+
+  clean:
+    desc: "🧽 Clean generated code and binaries"
+    status:
+      - test ! -d {{.OUTPUT_DIR}}
+    cmds:
+      - rm -rf {{.OUTPUT_DIR}}
+
+  clean:full:
+    desc: "🧽 Clean generated code, binaries including Node and its modules"
+    deps:
+      - clean
+    status:
+      - test ! -d {{.NODE_DIR}}
+      - test ! -d {{.NODE_MODULES_DIR}}
+    cmds:
+      - rm -rf {{.NODE_DIR}}
+      - rm -rf {{.NODE_MODULES_DIR}}
+
+  genie:build:
+    aliases:
+      - build
+    desc: "🏗️Build the app (tests are skipped)"
+    deps:
+      - java:is-installed
+    cmds:
+      - ./mvnw package -DskipTests
+
+  genie:build:prod:
+    desc: "🏗 Build the app (tests are skipped) in production mode"
+    deps:
+      - java:is-installed
+    cmds:
+      - ./mvnw package -DskipTests -Pprod
+
+  genie:test:
+    aliases:
+      - test
+    desc: "✅ Test the app"
+    deps:
+      - docker:is-started
+      - java:is-installed
+    cmds:
+      - ./mvnw verify
+
+  genie:start:
+    aliases:
+      - start
+    desc: "🏃 Start Genie"
+    # Make sure these variables are set before running
+    requires:
+      vars: [ FIREBASE_CREDENTIALS, OPENAI_API_KEY, APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE ]
+    preconditions:
+      - sh: 'test -f .env'
+        msg: "You must create a .env file with the required environment variables"
+      - sh: 'test -f {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}}'
+        msg: "You must create a {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}} file with the required Firebase secrets file"
+    cmds:
+      - cmd: task genie:frontend:sync &
+      - task: genie:backend:start
+
+  genie:start:prod:
+    aliases:
+      - start:prod
+    desc: "🏃 Start Genie locally in production mode (triggers a full clean build)"
+    cmds:
+      - task: clean:full
+      - task: genie:backend:start:prod
+
+  genie:backend:start:
+    desc: "🏃 Start Genie Spring Boot backend"
+    # Make sure these variables are set before running
+    requires:
+      vars: [ FIREBASE_CREDENTIALS, OPENAI_API_KEY, APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE ]
+    preconditions:
+      - sh: 'test -f .env'
+        msg: "You must create a .env file with the required environment variables"
+      - sh: 'test -f {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}}'
+        msg: "You must create a {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}} file with the required Firebase secrets file"
+    deps:
+      - db:start
+      - java:is-installed
+    cmds:
+      - echo "Starting Genie backend in Spring Boot Dev mode on http://localhost:8080 ..."
+      - ./mvnw spring-boot:run
+
+  genie:backend:start:prod:
+    desc: "🏃 Start Genie Spring Boot backend in production mode"
+    vars:
+      VERSION:
+        sh: xpath -q -e '//project/version//text()' pom.xml
+    env:
+      POSTGRESQL_ADDON_HOST: "{{.DB_HOST}}"
+      POSTGRESQL_ADDON_DB: "{{.DB_NAME}}"
+      POSTGRESQL_ADDON_USER: "{{.POSTGRES_USER}}"
+      POSTGRESQL_ADDON_PASSWORD: "{{.POSTGRES_PASSWORD}}"
+      POSTGRESQL_ADDON_PORT: "5432"
+    # Make sure these variables are set before running
+    requires:
+      vars: [ FIREBASE_CREDENTIALS, OPENAI_API_KEY, APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE ]
+    preconditions:
+      - sh: 'test -f .env'
+        msg: "You must create a .env file with the required environment variables"
+      - sh: 'test -f {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}}'
+        msg: "You must create a {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}} file with the required Firebase secrets file"
+    deps:
+      - db:start
+      - java:is-installed
+      - genie:build:prod
+    cmds:
+      - echo "Starting Genie backend in production mode on http://localhost:8080 ..."
+      - java -jar ./target/cfp-{{.VERSION}}.jar
+
+  genie:frontend:build:
+    desc: "🏗️Build Genie Node/Angular frontend"
+    deps:
+      - node:install
+    cmds:
+      - echo "Build Genie frontend ..."
+      - ./npm run webapp:build:dev
+
+  genie:frontend:sync:
+    desc: "👀 Build Genie Node/Angular frontend in watch mode"
+    deps:
+      - node:install
+    cmds:
+      - echo "Build Genie frontend and watch for changes ..."
+      - ./npm run webapp:build:dev:watch
+      - defer: "pkill -f 'npm run webapp:build:dev:watch'"
+      - defer: "pkill -f 'ng build --configuration development --watch'"
+
+  genie:frontend:start:
+    desc: "🏃 Start Genie Node/Angular frontend"
+    deps:
+      - node:install
+    cmds:
+      - echo "Starting Genie frontend in Angular Live Development Server mode on http://localhost:4200 ..."
+      - ./npm start
+
+  genie:release:
+    aliases:
+      - release
+    desc: "📦 Release a new Genie version (automatically selected)"
+    summary: |
+      The version update will be selected based on conventional commits.
+
+      This task will:
+      - run the `npm run release` command to bump the version and generate the changelog
+      - push the release to the remote repository (after getting your approval)
+    preconditions:
+      - sh: git rev-parse --abbrev-ref HEAD | grep -q '^master$'
+        msg: "You must do the release from the master branch."
+      - sh: git diff-index --quiet HEAD --
+        msg: "You have uncommitted changes. Please commit or stash them before releasing."
+    cmds:
+      - ./npm run release --no-verify {{.ARGS}}
+      - task: genie:release:push
+
+  genie:release:alpha:
+    aliases:
+      - release:alpha
+    desc: "📦 Release a new Genie pre-release alpha version"
+    cmds:
+      - task: genie:release
+        vars:
+          ARGS: -- --prerelease alpha
+
+  genie:release:beta:
+    aliases:
+      - release:beta
+    desc: "📦 Release a new Genie pre-release beta version"
+    cmds:
+      - task: genie:release
+        vars:
+          ARGS: -- --prerelease beta
+
+  genie:release:patch:
+    aliases:
+      - release:patch
+    desc: "📦 Release a new Genie patch version"
+    cmds:
+      - task: genie:release
+        vars:
+          ARGS: -- --release-as patch
+
+  genie:release:minor:
+    aliases:
+      - release:minor
+    desc: "📦 Release a new Genie minor version"
+    cmds:
+      - task: genie:release
+        vars:
+          ARGS: -- --release-as minor
+
+  genie:release:major:
+    aliases:
+      - release:major
+    desc: "📦 Release a new Genie major version"
+    cmds:
+      - task: genie:release
+        vars:
+          ARGS: -- --release-as major
+
+  genie:release:push:
+    desc: "📦 Push the release to the remote repository"
+    prompt: Do you want to push the release to the remote repository?
+    internal: true
+    cmds:
+      - git push --follow-tags origin
+
+  db:start:
+    desc: "🏃Start PostgreSQL db"
+    deps:
+      - db:prepare
+    cmds:
+      - docker compose --env-file .env.default up --detach --wait --remove-orphans --force-recreate
+
+  db:restart:
+    desc: "🔄 Restart PostgreSQL db"
+    deps:
+      - db:prepare
+    cmds:
+      - docker compose --env-file .env.default restart
+
+  db:status:
+    desc: "🚦 PostgreSQL db status"
+    deps:
+      - docker:is-started
+    cmds:
+      - docker compose ps
+
+  db:stop:
+    desc: "🛑 Stop PostgreSQL db"
+    deps:
+      - docker:is-started
+    cmds:
+      - docker compose --env-file .env.default stop
+
+  db:drop:
+    desc: "🧽 Stop and remove all services data (PostgreSQL)"
+    prompt: You will delete your local containers and data... Do you want to continue?
+    deps:
+      - docker:is-started
+    cmds:
+      - docker compose --env-file .env.default down --remove-orphans
+      - rm -rf "src/main/docker/data"
+
+  db:dump:
+    desc: "⬇️ Dump data from local PostgreSQL instance"
+    deps:
+      - postgresql:is-installed
+      - db:start
+    cmds:
+      - ./scripts/db-dump.sh
+
+  db:import:
+    desc: "⬆️ Import data into local PostgreSQL instance"
+    prompt: You will delete your local database content... Do you want to continue?
+    deps:
+      - postgresql:is-installed
+      - db:start
+    cmds:
+      - ./scripts/db-import.sh {{.CLI_ARGS}}
+
+  db:liquibase:update:
+    desc: "⚙️ Update local database with Liquibase changes"
+    deps:
+      - java:is-installed
+      - db:prepare
+    cmds:
+      - ./mvnw liquibase:update
+
+  db:liquibase:validate:
+    desc: "☑️ Validate local database with Liquibase changes"
+    deps:
+      - java:is-installed
+      - db:prepare
+    cmds:
+      - ./mvnw liquibase:validate
+
+  db:liquibase:clear-checksums:
+    desc: "🧽 Clear Liquibase checksums"
+    deps:
+      - java:is-installed
+      - db:prepare
+    cmds:
+      - ./mvnw liquibase:clearCheckSums
+
+  # INTERNAL TASKS
+
+  db:prepare:
+    internal: true
+    silent: true
+    deps:
+      - docker:is-started
+    status:
+      - test -d "src/main/docker/data"
+    cmds:
+      - mkdir -p "src/main/docker/data"

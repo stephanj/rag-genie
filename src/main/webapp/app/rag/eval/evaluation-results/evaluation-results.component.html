@@ -1,0 +1,156 @@
+<p-toast [style]="{marginTop: '80px'}"/>
+<p-confirmDialog/>
+
+<div class="card grid">
+    @if (entities && entities.length > 0) {
+        <div class="col-12">
+            <p-chart type="bar" [data]="data" [options]="options"/>
+        </div>
+
+        <div class="col-12">
+            <p-table #dt
+                     [value]="entities"
+                     dataKey="id"
+                     [globalFilterFields]="['name']"
+                     [(rows)]= "itemsPerPage"
+                     [resizableColumns]="true"
+                     [totalRecords]="totalItems"
+                     [lazy]="true"
+                     (onSort)="onChange($event)"
+                     (onPage)="onChange($event)">
+                <ng-template pTemplate="caption">
+                    <div class="grid">
+                        <div class="col-12 md:col-4">
+                            <p-button icon="pi pi-file"
+                                      (click)="dt.exportCSV()"
+                                      class="mr-2"
+                                      pTooltip="Export data to CSV"
+                                      tooltipPosition="top"/>
+                        </div>
+                        <div class="col-12 md:col-4 text-center">
+                            <p-button label="More evals"
+                                      [routerLink]="['/evaluation-questions']"
+                                      icon="pi pi-angle-double-right"/>
+                        </div>
+                        <div class="col-12 md:col-4 text-right">
+                            <p-button label="Delete all"
+                                      severity="danger"
+                                      (click)="deleteAll()"
+                                      icon="pi pi-times"/>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Details</th>
+                        <th pSortableColumn="createdOn" id="createdOn">
+                            <span class="mr-2">Created On</span>
+                            <p-sortIcon field="createdOn"/>
+                        </th>
+
+                        <th pSortableColumn="evaluation.name" id="name">
+                            Question Name
+                            <p-sortIcon field="name"/>
+                        </th>
+
+                        <th pSortableColumn="languageModel.name" id="model">
+                            Model
+                            <p-sortIcon field="model"/>
+                        </th>
+
+                        <th pSortableColumn="embeddingModelReference.name" id="embed">
+                            Embedding
+                            <p-sortIcon field="embed"/>
+                        </th>
+
+                        <th pSortableColumn="keywordMatch" id="keywordMatch">
+                            <span class="mr-2">
+                                <i class="pi pi-question-circle"
+                                   tooltipPosition="top"
+                                   pTooltip="How many of the keywords were found in the answer?"></i>
+                                Keyword Match
+                            </span>
+                            <p-sortIcon field="keywordMatch"/>
+                        </th>
+
+                        <th pSortableColumn="similarityScore" id="similarity">
+                            <span class="mr-2">
+                                <i class="pi pi-question-circle"
+                                   tooltipPosition="top"
+                                   pTooltip="Cosine similarity score using vector embeddings"></i>
+                                Similarity Score
+                            </span>
+                            <p-sortIcon field="similarity"/>
+                        </th>
+
+                        <th pSortableColumn="durationInMs" id="durationInMs">
+                            <i class="pi pi-clock"
+                               tooltipPosition="top"
+                               pTooltip="Eval duration in seconds"></i>
+                            <p-sortIcon field="durationInMs"/>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-result>
+                    <tr>
+                        <td>
+                            <p-button icon="pi pi-eye"
+                                      class="mr-2"
+                                      [routerLink]="['/evaluation-results', result.id, 'view']"
+                                      severity="success"/>
+                        </td>
+                        <td>{{result.createdOn | date: 'short'}}</td>
+                        <td>{{result.evaluation.name}}</td>
+                        <td>{{result.languageModel.modelType}} : {{result.languageModel.name}}</td>
+                        <td>{{result.embeddingModelReference.name}}</td>
+                        <td>
+                            @if (result.keywordMatch == 100) {
+                                <span class="darkgreen">
+                                    {{result.keywordMatch | number: '1.2-2'}}%
+                                    <i class="pi pi-check-circle"></i>
+                                </span>
+                            } @else if (result.keywordMatch >= 50) {
+                                {{result.keywordMatch | number: '1.2-2'}}%
+                                <i class="pi pi-check-circle"></i>
+                            }  @else if (result.keywordMatch < 50) {
+                                <span class="red">{{result.keywordMatch | number: '1.2-2'}}%</span>
+                                <i class="ml-2 pi pi-exclamation-triangle" style="color: darkred"></i>
+                            }
+                        </td>
+                        <td>
+                            @if (result.similarityScore == 100) {
+                                <span class="darkgreen">
+                                    {{result.similarityScore | number: '1.2-2'}}%
+                                    <i class="pi pi-check-circle"></i>
+                                </span>
+                            } @else if (result.similarityScore >= 80) {
+                                <span class="darkgreen">
+                                    {{result.similarityScore | number: '1.2-2'}}%
+                                    <i class="pi pi-check-circle"></i>
+                                </span>
+                            } @else if (result.similarityScore >= 50) {
+                                {{result.similarityScore | number: '1.2-2'}}%
+                            } @else if (result.similarityScore < 50) {
+                                {{result.similarityScore | number: '1.2-2'}}%
+                                <i class="pi pi-exclamation-triangle darkred"></i>
+                            }
+                        </td>
+                        <td>
+                            <i class="pi pi-clock mr-2"></i>{{getDurationInSeconds(result)}}
+                        </td>
+                        <td>
+                            <p-button icon="pi pi-trash"
+                                      (click)="delete(result, 'EvaluationResult', result.id)"
+                                      severity="danger"/>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    } @else {
+        <div class="col-12">
+            No evaluations results available.
+        </div>
+    }
+</div>

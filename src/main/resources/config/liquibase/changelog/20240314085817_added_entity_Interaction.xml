@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- ChangeSet for the creation of the UserAPIKey table -->
+    <changeSet id="20241403-1" author="stephan">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="genie_interaction"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="genie_interaction">
+
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_on"
+                    type="TIMESTAMP WITH TIME ZONE"
+                    defaultValueComputed="CURRENT_TIMESTAMP"/>
+
+            <column name="question" type="${clobType}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="answer" type="${clobType}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="duration_in_ms" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="input_tokens" type="integer"/>
+
+            <column name="output_tokens" type="integer"/>
+
+            <column name="cost" type="double"/>
+
+            <column name="user_vote" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="embedding_model_name" type="varchar(100)">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="language_model_id" type="bigint"/>
+
+            <column name="embedding_model_id" type="bigint"/>
+
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="fk_interaction_user_id"
+                                 baseTableName="genie_interaction" baseColumnNames="user_id"
+                                 referencedTableName="genie_user" referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_interaction_language_model_id"
+                                 baseTableName="genie_interaction" baseColumnNames="language_model_id"
+                                 referencedTableName="genie_language_model" referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,16 @@
+<div class="layout-sidebar"
+     (mouseenter)="onMouseEnter()"
+     (mouseleave)="onMouseLeave()">
+
+    <div class="layout-sidebar-top">
+        <a class="layout-topbar-logo" routerLink="/">
+            <span class="logo layout-topbar-logo-full"></span>
+        </a>
+        <button class="layout-sidebar-anchor p-link" type="button" (click)="anchor()"></button>
+    </div>
+    <genie-menu-profile #menuProfileStart *ngIf="menuProfilePosition === 'start'"/>
+    <div #menuContainer class="layout-menu-container">
+        <genie-menu/>
+    </div>
+    <genie-menu-profile #menuProfileEnd *ngIf="menuProfilePosition === 'end'"/>
+</div>

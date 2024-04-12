@@ -1,0 +1,19 @@
+<!-- The layout for authenticated users -->
+<div class="layout-container" [ngClass]="containerClass">
+
+    <genie-topbar/>
+    <genie-sidebar/>
+
+    <div class="layout-content-wrapper">
+        <genie-breadcrumb/>
+
+        <div class="layout-content">
+            <router-outlet/>
+        </div>
+
+        <genie-footer/>
+    </div>
+    <genie-config/>
+
+    <div *ngIf="layoutService.state.staticMenuMobileActive" class="layout-mask"></div>
+</div>

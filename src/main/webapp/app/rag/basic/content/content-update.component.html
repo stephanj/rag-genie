@@ -1,0 +1,93 @@
+<p-toast [style]="{marginTop: '80px'}" />
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" />
+
+<div class="card">
+    <h4>Content</h4>
+    <form [formGroup]="contentForm" (ngSubmit)="updateContent()" novalidate>
+        <div class="grid p-fluid">
+            <div class="field col-12 md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           id="date_field"
+                           type="text"
+                           [readOnly]="true"
+                           class="form-control"
+                           formControlName="createdOn">
+                    <label for="date_field">Import Date</label>
+                </span>
+            </div>
+
+            <div class="field col-12 md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           id="token_field"
+                           type="text"
+                           [readOnly]="true"
+                           formControlName="tokenCount">
+                    <label for="token_field">Estimated Tokens</label>
+                </span>
+            </div>
+
+            <div class="field col-12 md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           id="source"
+                           type="text"
+                           [readOnly]="true"
+                           class="form-control"
+                           formControlName="source">
+                    <label for="source">Source</label>
+                </span>
+            </div>
+
+            <div class="field col-12">
+                <span class="p-float-label">
+                    <input pInputText
+                           id="name_field"
+                           type="text"
+                           class="form-control"
+                           formControlName="name"
+                           placeholder="Enter document name">
+                    <label for="name_field">Name</label>
+                </span>
+            </div>
+
+            <div class="field col-12">
+                <span class="p-float-label">
+                    <textarea pInputTextarea
+                              id="description"
+                              rows="2"
+                              cols="80"
+                              formControlName="description"
+                              placeholder="Enter document description"></textarea>
+                    <label for="description">Description</label>
+                </span>
+            </div>
+
+            <div class="field col-12">
+                <span class="p-float-label">
+                    <textarea pInputTextarea
+                              id="value_field"
+                              rows="30"
+                              cols="80"
+                              formControlName="value"
+                              placeholder="Enter your text"></textarea>
+                    @if (content) {
+                        <label for="value_field">{{content.contentType}} Content</label>
+                    }
+                </span>
+            </div>
+
+            <div class="col-12">
+                <div class="field grid">
+                    <div class="col-12 md:col-6">
+                        <p-button type="button" label="Back" (click)="previousPage()"/>
+                    </div>
+                    <div class="col-12 md:col-6">
+                        <p-button type="submit" severity="warning" label="Update"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

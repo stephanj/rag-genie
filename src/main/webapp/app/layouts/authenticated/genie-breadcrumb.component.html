@@ -1,0 +1,23 @@
+<div class="layout-breadcrumb-container">
+    <nav class="layout-breadcrumb">
+        <ol>
+            <!-- Home icon always links to the root -->
+            <li>
+                <a class="text-color-secondary" [routerLink]="['/']">
+                    <i class="pi pi-home"></i>
+                </a>
+            </li>
+            <ng-template ngFor let-item let-last="last" [ngForOf]="breadcrumbs$ | async">
+                <li><i class="pi pi-angle-right"></i></li>
+                <li>
+                    <ng-container *ngIf="!last">
+                        <a [routerLink]="item.url" class="text-color-secondary">{{item.label}}</a>
+                    </ng-container>
+                    <ng-container *ngIf="last">
+                        <span class="text-color-secondary">{{item.label}}</span>
+                    </ng-container>
+                </li>
+            </ng-template>
+        </ol>
+    </nav>
+</div>

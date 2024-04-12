@@ -1,0 +1,4 @@
+id;login;password_hash;first_name;last_name;email;image_url;activated;created_by;last_modified_by
+2;anonymoususer;$2a$10$j8S5d7Sr7.8VTOYNviDPOeWX8KcYILUVJBsYV83Y5NtECayypx9lO;Anonymous;User;anonymous@cfp.dev;;true;system;system
+3;admin;$2a$10$mlC4AFLmfF1W82oIFs/rceRrm0HgHFPCrtzTo7z9jrFa0pFltzNkO;Admin;User;sja@devoxx.com;;true;system;system
+4;tester;$2a$10$wKmLjESNbg.M3bjBINHlWev3bEEHXKps.FCLGk0OZsIPWExDG3Mbe;User;User;user@cfp.dev;;true;system;system

@@ -1,0 +1,189 @@
+<form [formGroup]="chatForm"
+      (ngSubmit)="sendMessage()" novalidate>
+
+    <div class="card grid p-fluid">
+        <div class="col-12">
+            Chat with the your documents.
+        </div>
+
+        <div class="field col-12 md:col-6">
+            <genie-language-model-dropdown (languageModel)="modelSelected($event)"/>
+        </div>
+
+        <div class="field col-12 md:col-6">
+            <p-dropdown [options]="embeddingModels"
+                        appendTo="body"
+                        placeholder="Select embedding model"
+                        formControlName="embeddingModel">
+                <ng-template let-item pTemplate="selectedItem">
+                    <div>{{ item.name }} ({{ item.dimSize }} dim)</div>
+                </ng-template>
+                <ng-template let-item pTemplate="item">
+                    <div>{{ item.name }} ({{ item.dimSize }} dim)</div>
+                </ng-template>
+            </p-dropdown>
+        </div>
+
+        <div class="field col-12 md:col-4">
+            <div class="field col-12">
+                <div class="mb-3">Temperature: {{ getTemperature() }}</div>
+                <p-slider formControlName="temperature"
+                          id="temp_field"
+                          [min]="0"
+                          [max]="1"
+                          [step]="0.1" />
+                <div class="grid p-fluid mt-2">
+                    <div class="col-4">Precise</div>
+                    <div class="col-4 text-center">Neutral</div>
+                    <div class="col-4 text-right">Creative</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field col-12 md:col-4 text-center align-self-center">
+            <span class="p-float-label">
+                <p-inputNumber formControlName="topP"
+                               [max]="1"
+                               [min]="0"
+                               [step]="0.1"
+                               id="topP"/>
+                <label for="topP">topP (0 - 1)</label>
+            </span>
+        </div>
+
+        <div class="field col-12 md:col-4 text-center align-self-center">
+            <p-checkbox [binary]="true"
+                        formControlName="rerankAnswers"
+                        (onChange)="rerankResponse($event)"
+                        label="ReRank response (BM25)"/>
+            <i class="ml-2 pi pi-info-circle"
+               tooltipPosition="top"
+               pTooltip="Only use reranked responses using BM25 and score > 0"></i>
+        </div>
+
+        <div class="field col-12 md:col-3">
+            <span class="p-float-label">
+                <p-inputNumber formControlName="maxTokens"
+                               id="maxTokens"
+                               [min]="10"
+                               placeholder="The maximum output tokens" />
+                <label for="maxTokens">Max output tokens</label>
+            </span>
+        </div>
+
+        <div class="field col-12 md:col-3">
+            <span class="p-float-label">
+                <p-inputNumber formControlName="maxResults"
+                               id="maxResults"
+                               [min]="1"
+                               [max]="20"
+                               [step]="1"
+                               placeholder="The maximum results used" />
+                <label for="maxResults">Max results (1 - 20)</label>
+            </span>
+        </div>
+
+        <div class="field col-12 md:col-3">
+            <span class="p-float-label">
+                <p-inputNumber formControlName="minScore"
+                               id="minScore"
+                               mode="decimal"
+                               [min]="0.1"
+                               [max]="1"
+                               [step]="0.1"
+                               placeholder="The minimum score (0.1 - 1)" />
+                <label for="minScore">Min score</label>
+            </span>
+        </div>
+
+        <div class="field col-12 md:col-3">
+            <span class="p-float-label">
+                <p-inputNumber formControlName="timeout"
+                               id="timeout"
+                               [min]="1"
+                               [max]="180"
+                               [step]="1"
+                               placeholder="Request timeout in seconds" />
+                <label for="timeout">Request timeout (secs)</label>
+            </span>
+        </div>
+
+
+        <div class="col-12 flex flex-column h-full">
+            @if (messages && messages.length > 0) {
+                <div class="flex align-items-center border-bottom-1 surface-border p-3 lg:p-6">
+                    <div class="relative flex align-items-center mr-3">
+                        <img [src]="getThemeImage()" alt="Chat Bot logo"
+                             class="w-4rem h-4rem border-circle shadow-4 logo">
+                    </div>
+                    <div class="mr-2">
+                        <span class="text-900 font-semibold block">GENIE BOT</span>
+                    </div>
+                </div>
+            }
+            <div class="p-3 md:px-4 lg:px-6 lg:py-4 mt-2 overflow-y-auto" style="max-height: 53vh;">
+                <div *ngFor="let message of messages">
+                    <div *ngIf="message.ownerId !== account?.id" class="grid grid-nogutter mb-4">
+                        <div class="mr-3 mt-1">
+                            <img [src]="getThemeImage()" alt="Chat Bot logo"
+                                 class="w-3rem h-3rem border-circle shadow-4 logo">
+                        </div>
+                        <div class="col mt-3">
+                            <p class="text-900 font-semibold mb-3">GENIE BOT</p>
+                            <span
+                                class="response inline-block font-medium border-1 surface-border p-3 white-space-normal border-round text-color-secondary"
+                                [innerHTML]="parseTextToHtml(message.text)"></span>
+                            <p class="text-700 mt-3">{{ parseDate(message.createdAt) }}<i
+                                class="pi pi-check ml-2 text-green-400"></i></p>
+                        </div>
+                    </div>
+
+                    <div *ngIf="message.ownerId === account?.id" class="grid grid-nogutter mb-4">
+                        <div class="col mt-3 text-right">
+                        <span
+                            class="response inline-block text-left font-medium border-1 surface-border bg-primary-100 text-primary-900 p-3 white-space-normal border-round">
+                              {{ message.text }}</span>
+                            <p class="text-700 mt-3">{{ parseDate(message.createdAt) }} <i
+                                class="pi pi-check ml-2 text-green-400"></i></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-nogutter mb-4" *ngIf="isLoading()">
+                    <div class="mr-3 mt-1">
+                        <img [src]="getThemeImage()" alt="Chat Bot logo"
+                             class="w-3rem h-3rem border-circle shadow-4 logo">
+                    </div>
+                    <div class="col mt-3">
+                        <p class="text-900 font-semibold mb-3">GENIE BOT</p>
+                        <span class="text-700 inline-block font-medium surface-border p-3 ">
+                        <div class="snippet" data-title="dot-collision">
+                          <div class="stage">
+                            <div class="dot-collision"></div>
+                          </div>
+                        </div>
+                    </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-3 md:p-4 lg:p-6 flex flex-column sm:flex-row align-items-center mt-auto surface-border gap-3"
+                 [ngClass]="isLoading()?'':'border-top-1'">
+                <input id="message"
+                       type="text"
+                       pInputText
+                       formControlName="question"
+                       placeholder="Enter your message..."
+                       class="flex-1 w-full sm:w-auto border-round"
+                       (keydown.enter)="sendMessage()"/>
+                <div class="flex w-full sm:w-auto gap-3">
+                    <p-button label="Send"
+                              type="submit"
+                              [disabled]="!chatForm.valid || isLoading()"
+                              icon="pi pi-send"
+                              class="w-full sm:w-auto"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

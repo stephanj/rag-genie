@@ -1,0 +1,74 @@
+<div class="card">
+    <h2 id="genie-country-heading">Edit document</h2>
+
+    <form name="editForm"
+          role="form"
+          novalidate
+          (ngSubmit)="save()"
+          [formGroup]="editForm">
+
+        <div class="grid p-fluid">
+            <div class="col-12 md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="id"
+                           [readOnly]="true"
+                           formControlName="id"/>
+                    <label class="form-control-label"
+                           for="id">ID</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="embedding"
+                           [readOnly]="true"
+                           formControlName="embeddingModelName"/>
+                    <label class="form-control-label"
+                           for="embedding">Embedding</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="contentName"
+                           [readOnly]="true"
+                           formControlName="contentName"/>
+                    <label class="form-control-label"
+                           for="contentName">Content Source</label>
+                </span>
+            </div>
+
+            <div class="col-12">
+                <span class="p-float-label">
+                    <textarea pInputTextarea
+                              cols="80"
+                              rows="10"
+                              id="text"
+                              formControlName="content"></textarea>
+                    <label class="form-control-label"
+                           for="text">Text</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <p-button icon="pi pi-times"
+                          (click)="previousState()"
+                          label="Cancel"/>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <p-button type="submit"
+                          severity="warning"
+                          icon="pi pi-save"
+                          label="Save"/>
+            </div>
+
+        </div>
+    </form>
+</div>

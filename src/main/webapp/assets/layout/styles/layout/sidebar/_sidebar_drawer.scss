@@ -1,0 +1,281 @@
+@media screen and (min-width: $breakpoint) {
+    .layout-drawer {
+        .layout-sidebar {
+            height: 100%;
+            top: 0;
+            transition: width 0.3s cubic-bezier(0, 0, 0.2, 1);
+            width: 4.25rem;
+            z-index: 999;
+
+            .layout-sidebar-top {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 0.75rem;
+                height: 4rem;
+                background-color: var(--topbar-start-bg);
+                color: var(--topbar-item-text-color);
+
+                .layout-sidebar-logo {
+                    display: none;
+                    width: 0;
+                    transition: width 0.2s cubic-bezier(0, 0, 0.2, 1);
+                    transition-delay: 300ms;
+                }
+
+                .layout-sidebar-logo-slim {
+                    display: inline;
+                    order: 1;
+                }
+
+                .layout-sidebar-anchor {
+                    display: none;
+                    width: 1.25rem;
+                    height: 1.25rem;
+                    border-radius: 50%;
+                    border: 2px solid var(--topbar-menu-button-bg);
+                    background-color: transparent;
+                    transition: background-color var(--transition-duration),
+                        transform 0.3s;
+                }
+            }
+
+            .layout-menu-container {
+                overflow: hidden;
+
+                .layout-menu {
+                    transition: all 0.4s;
+                    .layout-root-menuitem {
+                        > .layout-menuitem-root-text {
+                            opacity: 1;
+                            white-space: nowrap;
+                            display: flex;
+                            justify-content: flex-end;
+                            height: 2.92rem;
+
+                            > span {
+                                margin-right: auto;
+                                opacity: 0;
+                                transition: all 0.1s;
+                            }
+
+                            .layout-menuitem-icon {
+                                font-size: 1.25rem;
+                                width: 1.25rem;
+                            }
+
+                            > .layout-menuitem-root-icon {
+                                display: block;
+                                margin-left: 0.125rem;
+                                font-size: 1.25rem;
+                            }
+                        }
+                    }
+
+                    ul {
+                        margin: 0;
+                        padding: 0;
+                        list-style-type: none;
+
+                        a {
+                            span {
+                                opacity: 0;
+                                white-space: nowrap;
+                                transition: all 0.1s;
+                            }
+
+                            .layout-menuitem-icon {
+                                font-size: 1.25rem;
+                                width: auto;
+                            }
+                            .layout-submenu-toggler {
+                                display: none;
+                            }
+                        }
+                        ul {
+                            li {
+                                a {
+                                    padding: 0.75rem 1.5rem;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .layout-menu-profile {
+                > button {
+                    padding: 0.75rem 1rem;
+                    span {
+                        opacity: 0;
+                        white-space: nowrap;
+                        transition: all 0.1s;
+                    }
+                }
+                > ul {
+                    > li {
+                        > button {
+                            > i {
+                                margin-right: .5rem;
+                                font-size: 1.25rem;
+                                width: auto;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .layout-topbar {
+            padding-left: 4.25rem;
+
+            .layout-topbar-start {
+                display: none;
+            }
+        }
+
+        &.layout-drawer {
+            .layout-content-wrapper {
+                margin-left: 4.25rem;
+                transition: margin-left 0.3s cubic-bezier(0, 0, 0.2, 1);
+                overflow-x: hidden;
+            }
+        }
+
+        &.layout-sidebar-active {
+            .layout-sidebar {
+                width: 17rem;
+
+                .layout-sidebar-top {
+                    padding: 0 1.5rem;
+                    .layout-sidebar-logo {
+                        display: inline;
+                        width: 100%;
+                        transition: width 0.2s cubic-bezier(0, 0, 0.2, 1);
+                        transition-delay: 300ms;
+                    }
+
+                    .layout-sidebar-logo-slim {
+                        display: none;
+                    }
+                    .layout-sidebar-anchor {
+                        display: block;
+                        animation: px-fadein 0.15s linear;
+                    }
+                }
+
+                .layout-menu-container {
+                    overflow: auto;
+                    overflow-x: hidden;
+                    .layout-menu {
+                        .layout-root-menuitem {
+                            > .layout-menuitem-root-text {
+                                white-space: nowrap;
+
+                                > .layout-menuitem-root-icon {
+                                    display: none;
+                                }
+                                > span {
+                                    margin-right: auto;
+                                    opacity: 1;
+                                    transition: all 0.1s;
+                                }
+                            }
+                        }
+
+                        ul {
+                            a {
+                                width: auto;
+                                .layout-submenu-toggler {
+                                    display: block;
+                                }
+
+                                span {
+                                    opacity: 1;
+                                    white-space: nowrap;
+                                    transition: all 0.3s;
+                                }
+                            }
+                            ul {
+                                overflow: hidden;
+                                border-radius: var(--border-radius);
+
+                                li {
+                                    a {
+                                        padding-left: 2.5rem;
+                                    }
+
+                                    li {
+                                        a {
+                                            padding-left: 3rem;
+                                        }
+
+                                        li {
+                                            a {
+                                                padding-left: 3.5rem;
+                                            }
+
+                                            li {
+                                                a {
+                                                    padding-left: 4rem;
+                                                }
+
+                                                li {
+                                                    a {
+                                                        padding-left: 5.5rem;
+                                                    }
+
+                                                    li {
+                                                        a {
+                                                            padding-left: 5rem;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .layout-menu-profile {
+                    > button {
+                        span {
+                            opacity: 1;
+                            white-space: nowrap;
+                            transition: all 0.1s;
+                        }
+                    }
+                    > ul {
+                        > li {
+                            > button {
+                                > i {
+                                    margin-right: .5rem;
+                                    font-size: 1.25rem;
+                                    width: auto;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &.layout-sidebar-anchored {
+            .layout-topbar {
+                padding-left: 17rem;
+            }
+
+            .layout-sidebar-top {
+                .layout-sidebar-anchor {
+                    background-color: var(--topbar-menu-button-bg);
+                }
+            }
+
+            .layout-content-wrapper {
+                margin-left: 17rem;
+            }
+        }
+    }
+}

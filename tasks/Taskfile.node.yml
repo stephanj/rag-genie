@@ -1,0 +1,33 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+vars:
+  NODE_VERSION:
+    sh: xpath -q -e '//project/properties/node.version//text()' pom.xml
+
+includes:
+  java: './Taskfile.java.yml'
+
+tasks:
+
+  install:
+    internal: true
+    silent: true
+    desc: Install NodeJS
+    requires:
+      vars: [NODE_VERSION]
+    deps:
+      - java:is-installed
+    status:
+      - scripts/verify-node.sh {{.NODE_VERSION}}
+    cmds:
+      - scripts/setup-node.sh {{.NODE_VERSION}}
+
+  check:
+    internal: true
+    silent: true
+    desc: Verify the NodeJS environment setup
+    requires:
+      vars: [NODE_VERSION]
+    cmds:
+      - scripts/verify-node.sh {{.NODE_VERSION}}

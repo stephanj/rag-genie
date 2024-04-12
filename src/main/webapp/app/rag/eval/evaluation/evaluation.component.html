@@ -1,0 +1,163 @@
+<p-toast [style]="{marginTop: '80px'}"/>
+<p-confirmDialog/>
+
+<div class="card grid">
+
+    <div class="col-12">
+        <p>Evaluate questions against your vector documents. You can select multiple language models to evaluate the questions against.</p>
+    </div>
+
+    <div class="col-12 md:col-6">
+        <p-button [routerLink]="['/evaluation-questions/new']"
+                  icon="pi pi-plus"
+                  class="mr-2"
+                  label="Add evaluation"/>
+    </div>
+
+    <div class="col-12 md:col-6 text-right">
+        <p-button (onClick)="showDialog = true"
+                  [disabled]="!selectedQuestions || selectedQuestions.length === 0"
+                  icon="pi pi-search"
+                  severity="danger"
+                  label="Start Evaluation"/>
+    </div>
+
+    @if (entities && entities.length > 0) {
+        <div class="col-12">
+            <p-table #dt
+                     [value]="entities"
+                     dataKey="id"
+                     [(rows)]= "itemsPerPage"
+                     [resizableColumns]="true"
+                     [totalRecords]="totalItems"
+                     (onRowUnselect)="removeSelectedQuestion($event)"
+                     (onRowSelect)="addSelectedQuestion($event)"
+                     (onSort)="onChange($event)"
+                     (onPage)="onChange($event)">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th id="select" style="width: 4rem">
+                            <p-tableHeaderCheckbox (click)="onSelectAll()"/>
+                        </th>
+                        <th pSortableColumn="question" id="question">
+                            <span class="mr-2">Question</span>
+                            <p-sortIcon field="question"/>
+                        </th>
+                        <th id="version">Keywords</th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-evaluation>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="evaluation"/>
+                        </td>
+                        <td>
+                            <div class="mb-2"><strong>[{{evaluation.name}}] {{evaluation.question}}</strong></div>
+                            <div>{{evaluation.answer}}</div>
+                            <div class="mt-2"><i class="pi pi-tags mr-2"></i>{{evaluation.keywords}}</div>
+                        </td>
+                        <td class="text-right">
+                            <p-button icon="pi pi-pencil"
+                                      class="mr-2"
+                                      [routerLink]="['/evaluation-questions', evaluation.id, 'edit']"
+                                      severity="success"/>
+                            <p-button icon="pi pi-trash"
+                                      (click)="delete(evaluation, 'EvaluationModel', evaluation.name)"
+                                      severity="danger"/>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    }
+</div>
+
+<p-dialog [(visible)]="showDialog"
+          [style]="{'max-width':'75%', 'width': '50%'}"
+          [modal]="true"
+          header="Evaluate Questions">
+    <div class="grid p-fluid">
+        <div class="field col-12">
+            <genie-language-model-dropdown [multiple]="true"
+                                           (languageModel)="onSelect($event)"/>
+        </div>
+
+        <div class="field col-12">
+            <p-dropdown [options]="embeddingModels"
+                        appendTo="body"
+                        placeholder="Select embedding model"
+                        [(ngModel)]="embeddingModel">
+                <ng-template let-item pTemplate="selectedItem">
+                    <div>{{ item.name }} ({{ item.dimSize }} dim)</div>
+                </ng-template>
+                <ng-template let-item pTemplate="item">
+                    <div>{{ item.name }} ({{ item.dimSize }} dim)</div>
+                </ng-template>
+            </p-dropdown>
+        </div>
+
+        <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+                <p-inputNumber [(ngModel)]="minScore"
+                               id="minScore"
+                               suffix="%"
+                               [min]="1"
+                               [max]="100"/>
+                <label for="minScore">Minimum similarity score (10 - 100%)</label>
+            </span>
+        </div>
+
+        <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+                <p-inputNumber id="size"
+                               [(ngModel)]="size"
+                               [min]="1"
+                               [max]="10"/>
+                 <label for="size">Maximum documents to use (1 - 10)</label>
+            </span>
+        </div>
+
+        <div class="field col-12 md:col-6">
+            <p-checkbox [binary]="true"
+                        [(ngModel)]="rerankAnswers"
+                        label="ReRank response using BM25" />
+        </div>
+
+        <div class="field col-12 md:col-6">
+            <span class="p-float-label">
+                <p-inputNumber [(ngModel)]="maxOutputTokens"
+                               [min]="10"
+                               id="maxTokens"
+                               placeholder="The maximum tokens to use"/>
+                <label for="minScore">Max Output Tokens</label>
+            </span>
+        </div>
+
+        <div class="field col-12">
+           <div class="mb-3">Temperature</div>
+           <p-slider [(ngModel)]="temperature"
+                     id="temp_field"
+                     [min]="0"
+                     [max]="1"
+                     [step]="0.1"/>
+           <div class="grid p-fluid mt-2">
+                <div class="col-4">Precise</div>
+                <div class="col-4 text-center">Neutral</div>
+                <div class="col-4 text-right">Creative</div>
+           </div>
+        </div>
+
+        <div class="field col-12">
+            <p-button (onClick)="evaluate()"
+                      [disabled]="!selectedModels.length || evaluating"
+                      label="Start"
+                      icon="pi pi-check"/>
+            @if (evaluating) {
+                <div class="col-12">
+                    <p-progressBar mode="indeterminate" [style]="{height: '3px'}"/>
+                </div>
+            }
+        </div>
+    </div>
+</p-dialog>

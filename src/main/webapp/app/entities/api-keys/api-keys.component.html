@@ -1,0 +1,166 @@
+<p-toast [style]="{marginTop: '80px'}"/>
+<p-confirmDialog header="Revoke key"/>
+
+<div class="card grid p-fluid">
+    <div class="field col-12">
+        <h5>Get your Large Language Model API keys</h5>
+    </div>
+    <div class="field col-12 md:col-2">
+        <p-button severity="info"
+                  [outlined]="true"
+                  icon="pi pi-key"
+                  label="OpenAI"
+                  pTooltip="Get your OpenAI key for LLM's & Embeddings"
+                  size="large"
+                  (onClick)="visit('https://platform.openai.com/api-keys')"/>
+    </div>
+    <div class="field col-12 md:col-2">
+        <p-button severity="info"
+                  [outlined]="true"
+                  icon="pi pi-key"
+                  label="Anthropic"
+                  pTooltip="Get your Anthropic key for the Claude LLM's & Embeddings"
+                  size="large"
+                  (onClick)="visit('https://console.anthropic.com/settings/keys')"/>
+    </div>
+    <div class="field col-12 md:col-2">
+        <p-button severity="info"
+                  [outlined]="true"
+                  icon="pi pi-key"
+                  label="Mistral"
+                  size="large"
+                  (onClick)="visit('https://console.mistral.ai/api-keys/')"/>
+    </div>
+    <div class="field col-12 md:col-2">
+        <p-button severity="info"
+                  [outlined]="true"
+                  icon="pi pi-key"
+                  label="Groq"
+                  size="large"
+                  (onClick)="visit('https://console.groq.com/keys')"/>
+    </div>
+    <div class="field col-12 md:col-2">
+        <p-button severity="info"
+                  [outlined]="true"
+                  icon="pi pi-key"
+                  label="Cohere"
+                  pTooltip="Get your Cohere key for embeddings"
+                  size="large"
+                  (onClick)="visit('https://dashboard.cohere.com/api-keys')"/>
+    </div>
+    <div class="field col-12 md:col-2">
+        <p-button severity="info"
+                  [outlined]="true"
+                  icon="pi pi-key"
+                  label="DeepInfra"
+                  pTooltip="Get your DeepInfra key for Open Source LLMs"
+                  size="large"
+                  (onClick)="visit('https://deepinfra.com/dash/api_keys')"/>
+    </div>
+
+    <div class="field col-12">
+        <h5>Get your Web Search API key</h5>
+    </div>
+    <div class="col-12 md:col-2">
+        <p-button severity="info"
+                  [outlined]="true"
+                  icon="pi pi-key"
+                  label="SerpAPI"
+                  pTooltip="Get your SerpAPI key for web search"
+                  size="large"
+                  (onClick)="visit('https://serpapi.com/manage-api-key')"/>
+    </div>
+    <div class="field col-12 mt-4">
+        <p>Your API keys are stored <strong>encrypted</strong> and accessible solely by your account.</p>
+        <p>Additionally, you can remove your keys at any time, which will lead to their complete deletion from our database!</p>
+    </div>
+    <div class="col-4"></div>
+    <div class="col-4 mt-4 mb-6">
+        <p-button type="button"
+                  icon="pi pi-key"
+                  severity="danger"
+                  (click)="showDialog = true"
+                  label="Add Key"/>
+    </div>
+    <div class="col-4"></div>
+
+    <div class="field col-12" *ngIf="entities && entities.length > 0">
+        <p-table [value]="entities">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th id="name">Name</th>
+                    <th id="provider">Provider</th>
+                    <th id="key">Secret Key</th>
+                    <th id="createdOn">Created On</th>
+                    <th id="lastUsed">Last Used</th>
+                    <th id="action"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-entity>
+                <tr>
+                    <td>{{entity.name}}</td>
+                    <td>{{entity.languageType}}</td>
+                    <td>{{entity.keyMask}}</td>
+                    <td>{{entity.createdDate | date : 'medium'}}</td>
+                    <td>
+                        @if (entity.lastUsed) {
+                            {{entity.lastUsed | date : 'medium'}}
+                        } @else {
+                            Never
+                        }
+                    </td>
+                    <td class="text-right">
+                        <p-button type="button"
+                                  icon="pi pi-trash"
+                                  (click)="deleteKey(entity.id)"
+                                  severity="danger"/>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-dialog header="Add API key" [(visible)]="showDialog">
+    <div class="card grid p-fluid">
+
+        <div class="col-12">
+            <span class="p-float-label">
+                <input pInputText
+                       id="keyName"
+                       [maxLength]="100"
+                       placeholder="Give a logical name for your key"
+                       [(ngModel)]="keyName"/>
+                <label for="keyName">Reference Name</label>
+            </span>
+        </div>
+
+        <div class="col-12">
+            <p-dropdown [options]="llmProviderOptions"
+                        [(ngModel)]="selectedProvider"
+                        optionLabel="label"
+                        appendTo="body"
+                        placeholder="Select provider"/>
+        </div>
+
+        <div class="col-12">
+            <input pInputText
+                   placeholder="API KEY"
+                   type="password"
+                   [(ngModel)]="keyValue"/>
+        </div>
+
+        <div class="col-12">
+            <p-button type="button"
+                      icon="pi pi-pencil"
+                      (click)="saveKey()"
+                      label="Save"/>
+        </div>
+
+        <div class="col-12">
+            <p-progressBar [hidden]="!saving" mode="indeterminate" [style]="{height: '3px'}"/>
+        </div>
+
+    </div>
+
+</p-dialog>

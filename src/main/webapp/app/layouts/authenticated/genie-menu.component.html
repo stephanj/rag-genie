@@ -1,0 +1,9 @@
+<ul class="layout-menu">
+    <ng-container *ngFor="let item of model; let i = index;">
+        @if (item.separator) {
+            <li class="menu-separator"></li>
+        }@else {
+            <li genie-menuitem [item]="item" [index]="i" [root]="true"></li>
+        }
+    </ng-container>
+</ul>

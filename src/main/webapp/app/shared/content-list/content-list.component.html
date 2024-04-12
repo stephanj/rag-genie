@@ -1,0 +1,101 @@
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" />
+
+<p-table [value]="entities"
+         [rowHover]="true"
+         [paginator]="totalItems > itemsPerPage"
+         [showCurrentPageReport]="totalItems > itemsPerPage"
+         paginatorPosition="both"
+         [rowsPerPageOptions]="[25, 50, 100]"
+         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+         [(rows)]="itemsPerPage"
+         [resizableColumns]="true"
+         [totalRecords]="totalItems"
+         [(selection)]="selectedContent"
+         dataKey="id"
+         (onRowSelect)="onRowSelect($event)"
+         (onRowUnselect)="onRowUnselect($event)"
+         [lazy]="true"
+         [lazyLoadOnInit]="false"
+         (onLazyLoad)="loadContent($event)"
+         (onSort)="onChange($event)"
+         (onPage)="paginate($event)">
+    <ng-template pTemplate="header">
+        <tr>
+            @if (selectEnabled) {
+                @if (multiSelect) {
+                    <th id="select" style="width: 4rem">
+                        <p-tableHeaderCheckbox (click)="onSelectAll()"/>
+                    </th>
+                } @else {
+                    <th>Select</th>
+                }
+            }
+            @if (asAdmin) {
+                <th id="user">User</th>
+            }
+            <th pSortableColumn="contentType" id="contentType">
+                <span class="mr-2">Type</span>
+                <p-sortIcon field="contentType"/>
+            </th>
+            <th id="name">
+                <p-columnFilter type="text" field="name" placeholder="Filter on name"/>
+            </th>
+            <th id="source">Source</th>
+            <th pSortableColumn="tokenCount" id="tokenCount"># Tokens
+                <i class="pi pi-info-circle ml-1 mr-2"
+                   tooltipPosition="top"
+                   pTooltip="Estimated number of tokens in uploaded content"></i>
+                <p-sortIcon field="tokenCount"/>
+            </th>
+            <th pSortableColumn="createdOn" id="createdOn">
+                <span class="mr-2">Created On</span>
+                <p-sortIcon field="createdOn"/>
+            </th>
+            @if (showActions) {
+                <th id="actions">Actions</th>
+            }
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-content>
+        <tr>
+            @if (selectEnabled) {
+                <td>
+                    @if (multiSelect) {
+                        <p-tableCheckbox [value]="content"/>
+                    } @else {
+                        <p-tableRadioButton [value]="content"/>
+                    }
+                </td>
+            }
+            @if (asAdmin) {
+                <td>{{ content.fullName }}</td>
+            }
+            <td>
+                <i [class]="'text-xl text-primary mr-2 ' + getIcon(content)"></i>
+                {{ content.contentType }}
+            </td>
+            <td>{{ content.name }}</td>
+            <td>{{ content.source }}</td>
+            <td>{{ content.tokenCount | number: '2.'}}</td>
+            <td>{{ content.createdOn | date : 'medium' }}</td>
+            @if (showActions) {
+                <td>
+                    @if (asAdmin) {
+                        <p-button icon="pi pi-user-plus"
+                                  class="mr-2"
+                                  severity="info"
+                                  [routerLink]="['/content-admin', content.id, 'edit']" />
+                    } @else {
+                        <p-button icon="pi pi-pencil"
+                                  class="mr-2"
+                                  severity="info"
+                                  [routerLink]="['/content', content.id, 'edit']" />
+                    }
+                    <p-button icon="pi pi-trash"
+                              severity="danger"
+                              (click)="deleteContent(content.id, content.name)" />
+                </td>
+            }
+        </tr>
+    </ng-template>
+</p-table>

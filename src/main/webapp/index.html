@@ -1,0 +1,140 @@
+<!doctype html>
+<html class="no-js" lang="en" dir="ltr">
+<head>
+    <base href="./" />
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>Devoxx Genie - The Devoxx AI Genie</title>
+    <meta name="description" content="Explore how the Large Language Model (LLM) Retrieval-Augmented Generation (RAG) test system enhances information retrieval, improves accuracy, and integrates seamlessly with search technologies.">
+
+    <!-- SEO Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="index, follow">
+    <meta name="keywords" content="Devoxx, AI, RAG, LLM, Retrieval-Augmented Generation, Information Retrieval, Search Optimization, Large Language Model">
+
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <meta name="author" content="The Java Community BV">
+<!--    <meta name="image" property="og:image" content="https://i.ibb.co/3v3P14F/CFP-DEV.png">-->
+
+    <!-- Facebook meta tags --->
+    <meta property="og:title" content="Devoxx Genie - Optimizing LLM for Enhanced Information Retrieval">
+    <meta property="og:description" content="Discover how Retrieval-Augmented Generation (RAG) improves Large Language Model (LLM) capabilities for superior information retrieval and search engine optimization.">
+<!--    <meta property="og:image" content="https://i.ibb.co/3v3P14F/CFP-DEV.png">-->
+
+    <!-- Twitter meta tags --->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Devoxx Genie - Optimizing LLM for Enhanced Information Retrieval">
+    <meta name="twitter:description" content="Discover how Retrieval-Augmented Generation (RAG) improves Large Language Model (LLM) capabilities for superior information retrieval and search engine optimization.">
+<!--    <meta name="twitter:image" content=" https://i.ibb.co/3v3P14F/CFP-DEV.png">&ndash;&gt;-->
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link id="font-link" rel="stylesheet" type="text/css" href="font-group2.css">
+
+    <link id="theme-link" rel="stylesheet" type="text/css" href="theme-light.css">
+
+    <link rel="shortcut icon" href="favicon.ico" />
+
+    <!-- inline spinner styles to be able to display spinner right away -->
+    <style>
+        body, html {
+            height: 100%;
+        }
+
+        .app-loading {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            background-color: white;
+        }
+
+        /* HTML: <div class="loader"></div> */
+        .app-loading .loader {
+            width: fit-content;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 30px;
+            background: linear-gradient(90deg,#000 50%,#0000 0) right/200% 100%;
+            animation: l21 2s infinite linear;
+        }
+        .app-loading .loader::before {
+            content :"Loading...";
+            color: #0000;
+            padding: 0 5px;
+            background: inherit;
+            background-image: linear-gradient(90deg,#fff 50%,#000 0);
+            -webkit-background-clip:text;
+            background-clip:text;
+        }
+
+        @keyframes l21{
+            100%{background-position: left}
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes dash {
+            0% {
+                stroke-dasharray: 1, 200;
+                stroke-dashoffset: 0;
+            }
+            50% {
+                stroke-dasharray: 89, 200;
+                stroke-dashoffset: -35px;
+            }
+            100% {
+                stroke-dasharray: 89, 200;
+                stroke-dashoffset: -124px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!--[if lt IE 9]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <genie-default-layout>
+
+        <!-- loading layout replaced by app after startup -->
+        <div class="app-loading">
+            <div class="loader"></div>
+        </div>
+
+        <div class="app-loading">
+            <div id="jhipster-error" style="display:none">
+                <h1>An error has occurred</h1>
+                <h2>Please contact us at info at devoxx dot com</h2>
+            </div>
+        </div>
+
+    </genie-default-layout>
+
+    <noscript>
+        <h1>You must enable javascript to view this page.</h1>
+    </noscript>
+    <script type="text/javascript">
+        // show an error message if the app loading takes more than 5 sec
+        window.onload=function() {
+            setTimeout(showError, 4000);
+        }
+        function showError() {
+            const errorElm = document.getElementById("jhipster-error");
+            if (errorElm && errorElm.style) {
+                errorElm.style.display = 'block';
+            }
+        }
+    </script>
+
+</body>
+</html>

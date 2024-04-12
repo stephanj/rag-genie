@@ -1,0 +1,28 @@
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" />
+<p-toast position="top-right" />
+<div class="card grid">
+
+    <div class="col-12">
+        <h5>Vector Documents</h5>
+        <p>Each document is associated with a selected embedding model, currently only models with a dimension of 384 are supported.</p>
+    </div>
+
+    <div class="grid">
+        <div class="col-12">
+            <p-tabView>
+                <p-tabPanel header="384 Dimensions">
+                    <genie-abstract-document dimension="384"/>
+                </p-tabPanel>
+
+                <p-tabPanel header="512 Dimensions">
+                    <genie-abstract-document dimension="512"/>
+                </p-tabPanel>
+
+                <p-tabPanel header="1024 Dimensions">
+                    <genie-abstract-document dimension="1024"/>
+                </p-tabPanel>
+            </p-tabView>
+        </div>
+    </div>
+
+</div>

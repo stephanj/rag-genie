@@ -1,0 +1,96 @@
+<genie-text-splitter [summarizeEnabled]="true"
+                     (contentSelected)="onContentSelected($event)"
+                     (availableChunks)="onAvailableChunks($event)"/>
+
+@if (chunks && chunks.length > 0) {
+    <br>
+    <p-panel [toggleable]="true" [collapsed]="chunks.length === 0">
+        <p>Select language model to use for summarization.</p>
+
+        <form [formGroup]="modelForm"
+              (ngSubmit)="onSummarizeClick()"
+              novalidate>
+
+            <div class="grid p-fluid">
+
+                <div class="field col-12 md:col-6">
+                    <genie-language-model-dropdown (languageModel)="selectedLanguageModel($event)"/>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <p-dropdown [options]="embeddingModels"
+                                formControlName="embeddingModel"
+                                optionLabel="name"/>
+                </div>
+
+                <div class="field col-12 md:col-6 grid">
+                    <div class="field col-12">
+                        <div class="mb-3">Temperature: {{getTemperature()}}</div>
+                        <p-slider formControlName="temperature"
+                                  [disabled]="summarizing"
+                                  id="temp_field"
+                                  [min]="0"
+                                  [max]="1"
+                                  [step]="0.1"/>
+                        <div class="grid p-fluid mt-2">
+                            <div class="col-4">Precise</div>
+                            <div class="col-4 text-center">Neutral</div>
+                            <div class="col-4 text-right">Creative</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <p-button type="submit"
+                              label="Summarize"
+                              [disabled]="modelForm.invalid || summarizing"/>
+                </div>
+
+                @if (summarizing) {
+                    <div class="col-12">
+                        <p-progressBar mode="indeterminate" [style]="{height: '3px'}"/>
+                    </div>
+                }
+            </div>
+
+        </form>
+    </p-panel>
+}
+
+@if (summaries && summaries.length > 0) {
+    <br>
+    <p-panel header="5. Summarized Text" [toggleable]="true" [collapsed]="false">
+        <div class="grid">
+            <div class="col-12">
+                <div class="p-text-secondary"><i class="pi pi-clock mr-2"></i>{{getSummaryDuration()}}</div>
+            </div>
+            <div class="col-12">
+                <p>Summarized text, make sure to review and correct where needed.</p>
+            </div>
+            <div class="col-12">
+                <p-button label="Store in DB"
+                          icon="pi pi-file-import"
+                          severity="danger"
+                          (click)="storeSummariesInDB()"
+                          pTooltip="Store the chunks in the vector database"
+                          [disabled]="saving || !chunks || chunks.length === 0"/>
+            </div>
+            <div class="col-12">
+                <p-table [value]="summaries">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th>Original</th>
+                            <th>Summary</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-summary let-i="rowIndex">
+                        <tr>
+                            <td>{{ chunks[i] }}</td>
+                            <td>{{ summary }}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </p-panel>
+}

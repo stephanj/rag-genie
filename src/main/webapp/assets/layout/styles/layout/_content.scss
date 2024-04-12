@@ -1,0 +1,10 @@
+.layout-content-wrapper {
+    padding-top: 4rem;
+
+    .layout-content {
+        min-height: calc(100vh - 13.5rem);
+        padding: 2rem;
+        background-color: var(--surface-ground);
+        margin-top: 2rem;
+    }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    "config:js-app",
+    "group:recommended",
+    "group:monorepos",
+    "packages:linters",
+    "packages:test",
+    "workarounds:all",
+    ":separateMultipleMajorReleases",
+    ":preserveSemverRanges",
+    "security:openssf-scorecard",
+    ":automergePatch",
+    ":semanticCommits"
+  ],
+  "prHourlyLimit": 5,
+  "dependencyDashboardLabels": ["Dependencies"],
+  "dependencyDashboardOSVVulnerabilitySummary": "all",
+  "labels": ["Dependencies"],
+  "packageRules": [
+    {
+      "matchCategories": ["ci"],
+      "addLabels": ["ci"]
+    },
+    {
+      "matchCategories": ["docker"],
+      "addLabels": ["docker"]
+    },
+    {
+      "matchCategories": ["js"],
+      "addLabels": ["js"]
+    },
+    {
+      "matchCategories": ["java"],
+      "addLabels": ["java"]
+    }
+  ]
+}

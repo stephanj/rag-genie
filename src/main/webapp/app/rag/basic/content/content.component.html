@@ -1,0 +1,135 @@
+<p-toast/>
+<div class="card grid">
+    <div class="col-12 md:col-4">
+        <p-button label="Delete seleted"
+                  [disabled]="!selectedContent || selectedContent.length === 0"
+                  icon="pi pi-trash"
+                  severity="warning"
+                  (click)="deleteSelectedContent()"/>
+
+        <p-button label="Delete all"
+                  [disabled]="!selectedContent || selectedContent.length === 0"
+                  icon="pi pi-trash"
+                  class="ml-2"
+                  severity="danger"
+                  (click)="deleteAllContent()"/>
+    </div>
+
+    <div class="col-12 md:col-4 flex items-center justify-content-start">
+        @if (totalTokensForUser && totalTokensForUser > 0) {
+            <span class="align-self-center">Total content tokens: {{totalTokensForUser | number: '1.0-0'}}</span>
+            <p-button icon="pi pi-refresh"
+                      [rounded]="true"
+                      [text]="true"
+                      (click)="updateTotalTokens()"/>
+        }
+    </div>
+
+    <div class="col-12 md:col-4 text-right">
+        <p-button label="Analyze selected code"
+                  [disabled]="disableWhenContentIsNotCode(selectedContent[0])"
+                  icon="pi pi-search"
+                  (click)="showAnalysisDialog()"/>
+    </div>
+
+
+    <div class="col-12">
+        <genie-content-list [selectEnabled]="true"
+                            [multiSelect]="true"
+                            [showActions]="true"
+                            (contentSelection)="onContentSelection($event)"
+                            (contentUnselect)="onContentUnselect($event)"/>
+    </div>
+</div>
+
+@if (selectedContent && selectedContent.length > 0) {
+    <p-dialog header="Analyze Code (Experimental)"
+              [style]="{'max-width':'75%', 'width': '50%'}"
+              [modal]="true"
+              [(visible)]="showDialog">
+
+        <form [formGroup]="analyzeForm" (ngSubmit)="analyzeSelectedContent()" novalidate>
+            <div class="grid p-fluid">
+                <div class="col-12">
+                    <p>Analyse "<strong>{{selectedContent[0].name}}</strong>"</p>
+                </div>
+
+                <div class="field col-12">
+                    <span class="p-float-label">
+                        <div class="field">Predefined prompts</div>
+                        <p-listbox [options]="auditRoles"
+                                   id="auditRole"
+                                   formControlName="auditRole"
+                                   optionLabel="label" />
+                    </span>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <p-checkbox inputId="useCustomPrompt"
+                                formControlName="includeComments"
+                                [binary]="true"
+                                label="Include code comments during analysis" />
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <p-checkbox inputId="includeRelatedCode"
+                                formControlName="includeRelatedCode"
+                                [binary]="true"
+                                label="Include all related project code" />
+                </div>
+
+                <div class="field col-12">
+                    <textarea formControlName="customPrompt"
+                              pInputTextarea
+                              [rows]="10"
+                              [cols]="30"
+                              placeholder="Custom prompt"></textarea>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <genie-language-model-dropdown (languageModel)="modelSelected($event)"/>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <p-inputNumber formControlName="maxOutputTokens"
+                                   [min]="100"
+                                   [max]="100000"
+                                   placeholder="Max output tokens" />
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <p-button type="submit"
+                              icon="pi pi-send"
+                              [disabled]="!analyzeForm.valid || running"
+                              label="Submit" />
+                </div>
+                <div class="field col-12 md:col-6">
+                    <p-button type="button"
+                              icon="pi pi-dollar"
+                              [disabled]="selectedModel === null || running || !selectedModel.apiKeyRequired"
+                              label="Calculate Cost"
+                              pTooltip="Allows you to get an estimated cost from the language model provider before proceeding"
+                              tooltipPosition="top"
+                              (click)="calcCost()" />
+                </div>
+
+                <div class="field col-12" [hidden]="!running">
+                    <p-progressBar mode="indeterminate" [style]="{height: '3px'}" />
+                </div>
+            </div>
+        </form>
+    </p-dialog>
+
+    <p-dialog header="Suggestions (Experimental)" [(visible)]="showResultDialog" [style]="{'max-width':'75%', 'width': '50%'}">
+        <div class="col-12">
+            <p>Analyzed: "<strong>{{selectedContent[0].name}}</strong>"</p>
+        </div>
+        @if (recommendations) {
+            <div class="col-12">
+                <p-scrollPanel [style]="{ width: '100%' }">
+                    <p [innerHTML]="recommendations"></p>
+                </p-scrollPanel>
+            </div>
+        }
+    </p-dialog>
+}

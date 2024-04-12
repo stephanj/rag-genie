@@ -1,0 +1,30 @@
+$color1: #70d6ff;
+$color2: #e9ff70;
+$color3: blueviolet;
+$color4: #ffd670;
+$color5: orangered;
+$color6: gray;
+
+@mixin box-style($background, $color) {
+  background: $background;
+  color: $color;
+  padding: 1rem;
+  margin-right: 1rem;
+}
+
+.box {
+  &1 { @include box-style($color1, black) }
+  &2 { @include box-style($color2, black) }
+  &3 { @include box-style($color3, white) }
+  &4 { @include box-style($color4, black) }
+  &5 { @include box-style($color5, white) }
+  &6 { @include box-style($color6, white) }
+}
+
+.chunked-text {
+  line-height: 3.75rem;
+}
+
+.orange {
+  color: orangered;
+}

@@ -1,0 +1,139 @@
+<p-toast />
+<p-confirmDialog header="Delete interaction?" />
+<div class="card grid">
+    <div class="field col-12">
+        <p-table #dt
+                 [value]="entities"
+                 [(selection)]="entities"
+                 [columns]="cols"
+                 dataKey="id"
+                 [exportHeader]="'id'"
+                 [lazy]="true"
+                 [(rows)]="itemsPerPage"
+                 [resizableColumns]="true"
+                 columnResizeMode="expand"
+                 styleClass="p-datatable-gridlines"
+                 [totalRecords]="totalItems"
+                 (onSort)="onChange($event)"
+                 (onPage)="onChange($event)">
+
+            <ng-template pTemplate="caption">
+                <div class="grid">
+                    <div class="col-12 md:col-4">
+                        <p-button icon="pi pi-file"
+                                  (click)="dt.exportCSV()"
+                                  class="mr-2"
+                                  pTooltip="Export data to CSV"
+                                  tooltipPosition="top"/>
+                    </div>
+                    <div class="col-12 md:col-4 text-center p-fluid">
+                        <genie-language-model-dropdown (languageModel)="selectedLanguageModel($event)"/>
+                    </div>
+                    <div class="col-12 md:col-4 text-right">
+                        <p-button icon="pi pi-trash"
+                                  label="Delete All"
+                                  severity="danger"
+                                  (click)="deleteAllInteractions()" />
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th></th>
+                    <th pSortableColumn="createdOn" id="createdOn">
+                        <span class="mr-2">Created On</span>
+                        <p-sortIcon field="createdOn" />
+                    </th>
+                    <th pSortableColumn="languageModel.name" id="model">
+                        <span class="mr-2">Language Model</span>
+                        <p-sortIcon field="model" />
+                    </th>
+                    <th pSortableColumn="embeddingModelName" id="embeddingModelName">
+                        <span class="mr-2">Embedding Model</span>
+                        <p-sortIcon field="embeddingModelName" />
+                    </th>
+                    <th pSortableColumn="question" id="question">
+                        <span class="mr-2">Question</span>
+                        <p-sortIcon field="question" />
+                    </th>
+                    <th pSortableColumn="inputTokens" id="inputTokens">
+                        <span class="mr-2">In Tokens</span>
+                        <p-sortIcon field="inputTokens" />
+                    </th>
+                    <th pSortableColumn="outputTokens" id="outputTokens">
+                        <span class="mr-2">Out Tokens</span>
+                        <p-sortIcon field="outputTokens" />
+                    </th>
+                    <th pSortableColumn="cost" id="cost">
+                        <span class="mr-2">Cost</span>
+                        <p-sortIcon field="cost" />
+                    </th>
+                    <th pSortableColumn="durationInMs" id="durationInMs">
+                        <i class="pi pi-clock mr-2"></i>
+                        <p-sortIcon field="durationInMs" />
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-interaction let-expanded="expanded">
+                <tr>
+                    <td>
+                        <button type="button" pButton
+                                [pRowToggler]="interaction"
+                                class="p-button-text p-button-rounded p-button-plain"
+                                [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                    </td>
+                    <td>
+                        {{ interaction.createdOn | date: 'medium' }}
+                    </td>
+                    <td>
+                        {{ interaction.languageModel.modelType }} : {{ interaction.languageModel.name }}
+                    </td>
+                    <td>
+                        {{ interaction.embeddingModel.name }} ({{ interaction.embeddingModel.dimSize }} dim.)
+                    </td>
+                    <td>
+                        {{interaction.question}}
+                    </td>
+                    <td>
+                        {{ interaction.inputTokens | number: '1.0-0' }}
+                        <i class="pi pi-info-circle ml-2"
+                           tooltipPosition="top"
+                           pTooltip="{{interaction.languageModel.costInput1M}}$ per million tokens"></i>
+                    </td>
+                    <td>
+                        {{ interaction.outputTokens | number: '1.0-0' }}
+                        <i class="pi pi-info-circle ml-2"
+                           tooltipPosition="top"
+                           pTooltip="{{interaction.languageModel.costOutput1M}}$ per million tokens"></i>
+                    </td>
+                    <td class="text-center">
+                        {{ interaction.cost | number: '1.4-4' }}$
+                    </td>
+                    <td>
+                        {{ getDurationInSeconds(interaction) }}
+                    </td>
+                    <td>
+                        <p-button icon="pi pi-trash"
+                                  severity="danger"
+                                  (click)="deleteInteraction(interaction.id)" />
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="rowexpansion" let-interaction>
+                <tr>
+                    <td colspan="10">
+                        <div class="wrapper">
+                            <div>
+                                <strong>{{ interaction.question }}</strong>
+                            </div>
+                            <span class="wrap-answer" [innerHTML]="interaction.answer"></span>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+</div>

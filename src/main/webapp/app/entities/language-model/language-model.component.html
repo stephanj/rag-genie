@@ -1,0 +1,129 @@
+<p-toast [style]="{marginTop: '80px'}"/>
+<p-confirmDialog/>
+
+<div class="card grid">
+
+    <div class="col-12">
+        <p-table #dt
+                 [value]="entities"
+                 [globalFilterFields]="['name','modelType']"
+                 dataKey="id"
+                 [(rows)]= "itemsPerPage"
+                 [resizableColumns]="true"
+                 columnResizeMode="expand"
+                 styleClass="p-datatable-gridlines"
+                 [totalRecords]="totalItems"
+                 (onSort)="onChange($event)"
+                 (onPage)="onChange($event)">
+            <ng-template pTemplate="caption">
+                <div class="grid">
+                    <div class="col-12 md:col-4">
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Filter on name"  class="w-full sm:w-auto"/>
+                        </span>
+                    </div>
+
+                    <div class="col-12 md:col-4">
+                        <p-selectButton [options]="filterOptions"
+                                        (onChange)="showFilterView($event)"
+                                        [(ngModel)]="value" optionLabel="icon">
+                            <ng-template let-item pTemplate>
+                                <span [pTooltip]="item.description" tooltipPosition="top">
+                                    <i [class]="item.icon"></i><span class="ml-2">{{item.name}}</span>
+                                </span>
+                            </ng-template>
+                        </p-selectButton>
+                    </div>
+
+                    <div class="col-12 md:col-4 text-right" *ragHasAnyAuthority="['ROLE_ADMIN']">
+                        <p-button [routerLink]="['/language-model/new']"
+                                  icon="pi pi-plus"
+                                  label="Add language model"/>
+                    </div>
+
+                    <div class="col-12">
+                        <p-chart type="bar" [data]="data" [options]="options"/>
+                    </div>
+                </div>
+
+
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="modelType" id="type">
+                        <span class="mr-2">Provider</span>
+                        <p-sortIcon field="modelType"/>
+                    </th>
+                    <th pSortableColumn="name" id="name">
+                        <span class="mr-2">Name</span>
+                        <p-sortIcon field="name"/>
+                    </th>
+                    <th id="version">Version</th>
+                    <th pSortableColumn="contextWindow" id="context">
+                        <span>Context Window (1K)</span>
+                        <p-sortIcon field="contextWindow"/>
+                    </th>
+                    <th pSortableColumn="costInput1M" id="cost_input">
+                        <span class="mr=2">Input Cost per 1M</span>
+                        <p-sortIcon field="costInput1M"/>
+                    </th>
+                    <th pSortableColumn="costOutput1M" id="cost_output">
+                        <span class="mr=2">Output Cost per 1M</span>
+                        <p-sortIcon field="costOutput1M"/>
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-langModel>
+                <tr>
+                    <td>
+                        {{langModel.modelType}}
+                        @if (langModel.website) {
+                            <a [href]="langModel.website" target="_blank">
+                                <i class="pi pi-external-link superscript"
+                                   tooltipPosition="top"
+                                   pTooltip="More details on provider website"></i>
+                            </a>
+                        }
+                    </td>
+                    <td>
+                        {{langModel.name}}
+                        @if (langModel.apiKeyRequired) {
+                            <a routerLink="/api-keys">
+                                <i class="pi pi-key superscript"
+                                   tooltipPosition="top"
+                                   pTooltip="Requires an API Key"></i>
+                            </a>
+                        }
+                    </td>
+                    <td>
+                        {{langModel.version}}
+                    </td>
+                    <td>
+                        @if (langModel.contextWindow > 0) {
+                            {{langModel.contextWindow}}K
+                        } @else {
+                            -
+                        }
+                    </td>
+                    <td>
+                        ${{langModel.costInput1M | number: '1.2-2'}}
+                    </td>
+                    <td>
+                        ${{langModel.costOutput1M | number: '1.2-2'}}
+                    </td>
+                    <td class="text-right">
+                        <p-button icon="pi pi-pencil"
+                                  class="mr-2"
+                                  [routerLink]="['/language-model', langModel.id, 'edit']"
+                                  severity="success"/>
+                        <p-button icon="pi pi-trash"
+                                  (click)="delete(langModel, 'LanguageModel', langModel.name)"
+                                  severity="danger"/>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>

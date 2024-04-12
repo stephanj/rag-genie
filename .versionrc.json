@@ -1,0 +1,84 @@
+{
+  "header": "# Changelog 📦",
+  "releaseCommitMessageFormat": "chore(release): {{currentTag}} 🏆",
+  "commitUrlFormat": "https://gitlab.com/{{owner}}/{{repository}}/commit/{{hash}}",
+  "compareUrlFormat": "https://gitlab.com/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}",
+  "issueUrlFormat": "https://gitlab.com/{{owner}}/{{repository}}/issues/{{id}}",
+  "packageFiles": [
+    {
+      "filename": "package.json",
+      "type": "json"
+    }
+  ],
+  "bumpFiles": [
+    {
+      "filename": "package.json",
+      "type": "json"
+    },
+    {
+      "filename": "package-lock.json",
+      "type": "json"
+    },
+    {
+      "filename": "pom.xml",
+      "updater": "config/version-pom-updater.js"
+    }
+  ],
+  "types": [
+    {
+      "type": "feat",
+      "hidden": false,
+      "section": "Features 🚀"
+    },
+    {
+      "type": "fix",
+      "hidden": false,
+      "section": "Bug Fixes 🐛"
+    },
+    {
+      "type": "docs",
+      "hidden": false,
+      "section": "Documentation 📚"
+    },
+    {
+      "type": "style",
+      "hidden": false,
+      "section": "Styles 🎨"
+    },
+    {
+      "type": "chore",
+      "hidden": false,
+      "section": "Chores 🧹"
+    },
+    {
+      "type": "build",
+      "hidden": true,
+      "section": "Build System 🏗"
+    },
+    {
+      "type": "ci",
+      "hidden": true,
+      "section": "Continuous Integration 🤖"
+    },
+    {
+      "type": "perf",
+      "hidden": true,
+      "section": "Performance Improvements 🚄"
+    },
+    {
+      "type": "refactor",
+      "hidden": true,
+      "section": "Code Refactoring 🔨"
+    },
+    {
+      "type": "revert",
+      "hidden": true,
+      "section": "Reverts ⏪"
+    },
+    {
+      "type": "test",
+      "hidden": true,
+      "section": "Tests ✅"
+    }
+  ]
+}

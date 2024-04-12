@@ -1,0 +1,132 @@
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle" />
+<p-toast/>
+
+@if (hasDocuments) {
+    <p-panel>
+
+        <p>Retrieve documents that closely match a specific query.
+            <i class="pi pi-info-circle p-ml-2"
+               pTooltip="The similarity search is based on the cosine similarity between the query and the documents stored in the vector database. The similarity score is a value between 0 and 1, where 1 means the documents are identical."
+               tooltipPosition="top"></i>
+        </p>
+        <form [formGroup]="queryForm"
+              (ngSubmit)="doQuery()" novalidate>
+            <div class="grid p-fluid">
+                <div class="field col-12 md:col-6">
+                    <span class="p-float-label">
+                        <input pInputText
+                               id="query"
+                               type="text"
+                               class="form-control"
+                               formControlName="query"
+                               placeholder="Enter your query">
+                        <label for="query">Query</label>
+                    </span>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <p-dropdown [options]="embeddingModels"
+                                appendTo="body"
+                                placeholder="Select embedding model"
+                                formControlName="embeddingModel">
+                        <ng-template let-item pTemplate="selectedItem">
+                            <div>{{ item.name }} ({{ item.dimSize }} dim)</div>
+                        </ng-template>
+                        <ng-template let-item pTemplate="item">
+                            <div>{{ item.name }} ({{ item.dimSize }} dim)</div>
+                        </ng-template>
+                    </p-dropdown>
+
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <span class="p-float-label">
+                        <p-inputNumber formControlName="minScore"
+                                       id="minScore"
+                                       [min]="1"
+                                       [max]="100"
+                                       suffix="%"
+                                       placeholder="The minimum similairty score"/>
+                        <label for="minScore">Minimum similarity (1 - 100%)</label>
+                    </span>
+                </div>
+
+                <div class="field col-12 md:col-6">
+                    <span class="p-float-label">
+                        <p-inputNumber formControlName="maxResults"
+                                       id="maxResults"
+                                       [min]="1"
+                                       [max]="20"
+                                       placeholder="Max results used in context"/>
+                        <label for="maxResults">Maximum results [1-20]</label>
+                    </span>
+                </div>
+
+                <div class="field col-12">
+                    <p-checkbox [binary]="true"
+                                formControlName="rerankAnswers"
+                                label="ReRank response (BM25)" />
+                    <i class="ml-2 pi pi-info-circle"
+                       tooltipPosition="top"
+                       pTooltip="Only use reranked responses using BM25 and score > 0"></i>
+                </div>
+
+                <div class="field col-12">
+                    <p-button type="submit"
+                              label="Submit"
+                              [disabled]="queryForm.invalid"/>
+                </div>
+            </div>
+        </form>
+    </p-panel>
+} @else {
+    <p-panel>
+        <p>There are no documents stored in the vector database instance. Please add some documents first.</p>
+    </p-panel>
+}
+
+@if (usedChunks && usedChunks.length > 0) {
+    <br>
+    <p-panel [toggleable]="true" [collapsed]="similarityPanelClosed">
+            <ng-template pTemplate="header">
+                <div class="grid">
+                    <div class="col-12">
+                        <div class="p-panel-title">Found Documents</div>
+                    </div>
+                    <div class="col-12">
+                        <div class="p-text-secondary"><i class="pi pi-clock mr-2"></i> {{similarityDuration}} ms</div>
+                    </div>
+                </div>
+            </ng-template>
+            <p-table [value]="usedChunks">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>#</th>
+                        <th>Content</th>
+                        @if (!rerank) {
+                            <th>Similarity</th>
+                        }
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-document let-index="rowIndex">
+                    <tr>
+                        <td>{{index + 1}}</td>
+                        <td width="80%">{{document.content}}</td>
+                        @if (!rerank) {
+                            <td>{{document.score * 100 | number: '1.3-3'}}%</td>
+                        }
+                        <td>
+                            <p-button class="mr-2"
+                                      [routerLink]="['/document', document.id, 'edit']"
+                                      icon="pi pi-pencil"/>
+                            <p-button severity="danger"
+                                      icon="pi pi-trash"
+                                      pTooltip="Delete document"
+                                      (click)="deleteDocument(document)"/>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+    </p-panel>
+}

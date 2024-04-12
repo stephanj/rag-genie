@@ -1,0 +1,80 @@
+<p-button type="button" (click)="onConfigButtonClick()" icon="pi pi-cog" styleClass="layout-config-button"/>
+
+<p-sidebar [(visible)]="visible" position="right" [transitionOptions]="'.3s cubic-bezier(0, 0, 0.2, 1)'">
+    <div class="p-3">
+        <h5>Layout Scale</h5>
+        <div class="flex align-items-center">
+            <button icon="pi pi-minus"
+                    type="button"
+                    pButton
+                    (click)="decrementScale()"
+                    class="p-button-text p-button-rounded w-2rem h-2rem mr-2"
+                    [disabled]="scale === scales[0]"></button>
+            <div class="flex gap-2 align-items-center">
+                <i class="pi pi-circle-fill text-300" *ngFor="let s of scales" [ngClass]="{'text-primary-500': s === scale}"></i>
+            </div>
+            <button icon="pi pi-plus"
+                    type="button"
+                    pButton
+                    (click)="incrementScale()"
+                    class="p-button-text p-button-rounded w-2rem h-2rem ml-2"
+                    [disabled]="scale === scales[scales.length - 1]"></button>
+        </div>
+
+        <h5>Theme</h5>
+        <div class="flex gap-4">
+            <div class="field-radiobutton flex-1">
+                <p-radioButton name="colorScheme"
+                               value="light"
+                               id="light"
+                               [(ngModel)]="colorScheme"
+                               inputId="light"/>
+                <label for="light">Light</label>
+            </div>
+            <div class="field-radiobutton flex-1">
+                <p-radioButton name="colorScheme"
+                               value="dark"
+                               id="dark"
+                               [(ngModel)]="colorScheme"
+                               inputId="dark"/>
+                <label for="dark">Dark</label>
+            </div>
+        </div>
+
+        <ng-container *ngIf="!minimal">
+            <h5>Menu Mode</h5>
+            <div class="flex flex-wrap row-gap-3">
+                <div class="flex align-items-center gap-2 w-6">
+                    <p-radioButton id="mode1" name="menuMode" value="static" [(ngModel)]="menuMode" inputId="mode1"/>
+                    <label for="mode1">Static menu</label>
+                </div>
+                <div class="flex align-items-center gap-2 w-6">
+                    <p-radioButton id="mode2" name="menuMode" value="overlay" [(ngModel)]="menuMode" inputId="mode2"/>
+                    <label for="mode2">Overlay menu</label>
+                </div>
+                <div class="flex align-items-center gap-2 w-6">
+                    <p-radioButton id="mode3" name="menuMode" value="slim" [(ngModel)]="menuMode" inputId="mode3"/>
+                    <label for="mode3">Slim menu</label>
+                </div>
+                <div class="flex align-items-center gap-2 w-6">
+                    <p-radioButton id="mode4" name="menuMode" value="slim-plus" [(ngModel)]="menuMode" inputId="mode4"/>
+                    <label for="mode4">Slim+ menu</label>
+                </div>
+                <div class="flex align-items-center gap-2 w-6 ">
+                    <p-radioButton id="mode6" name="menuMode" value="reveal" [(ngModel)]="menuMode" inputId="mode6"/>
+                    <label for="mode6">Reveal menu</label>
+                </div>
+                <div class="flex align-items-center gap-2 w-6">
+                    <p-radioButton id="mode7" name="menuMode" value="drawer" [(ngModel)]="menuMode" inputId="mode7"/>
+                    <label for="mode7">Menu drawer</label>
+                </div>
+                <div class="flex align-items-center gap-2 w-6">
+                    <p-radioButton id="mode8" name="menuMode" value="horizontal" [(ngModel)]="menuMode" inputId="mode5"/>
+                    <label for="mode8">Horizontal menu</label>
+                </div>
+            </div>
+
+        </ng-container>
+
+    </div>
+</p-sidebar>

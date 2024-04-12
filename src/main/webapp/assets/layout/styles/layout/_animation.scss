@@ -1,0 +1,53 @@
+@keyframes px-mask-in {
+    from {
+        background-color: transparent;
+    }
+
+    to {
+        background-color: var(--maskbg);
+    }
+}
+
+@keyframes px-scalein {
+    0% {
+        opacity: 0;
+        transform: scaleY(0.8);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+}
+
+@keyframes px-fadein {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes px-fadeout {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.px-scalein {
+    animation: px-scalein .12s cubic-bezier(0, 0, 0.2, 1);
+}
+
+.px-fadein {
+    animation: px-fadein .15s linear;
+}
+
+.px-fadeout {
+    animation: px-fadeout .15s linear;
+}

@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+tasks:
+
+  is-installed:
+    internal: true
+    silent: true
+    desc: Check if PostgreSQL CLI is installed
+    requires:
+      vars: [POSTGRES_VERSION]
+    preconditions:
+      - sh: scripts/verify-postgresql.sh {{.POSTGRES_VERSION}}
+        msg: "psql/pg_dump/pg_restore aren't installed in version {{.POSTGRES_VERSION}}. Use `task env:setup` to install them."
+
+  install:
+    internal: true
+    silent: true
+    desc: Install PostgreSQL CLI
+    requires:
+      vars: [POSTGRES_VERSION]
+    status:
+      - scripts/verify-postgresql.sh {{.POSTGRES_VERSION}}
+    cmds:
+      - scripts/setup-postgresql.sh {{.POSTGRES_VERSION}}
+
+  check:
+    internal: true
+    silent: true
+    desc: Verify the PostgreSQL CLI environment setup
+    requires:
+      vars: [POSTGRES_VERSION]
+    cmds:
+      - scripts/verify-postgresql.sh {{.POSTGRES_VERSION}}

@@ -1,0 +1,28 @@
+html {
+    height: 100%;
+    font-size: $scale;
+}
+
+body {
+    font-weight: 400;
+    padding: 0;
+    margin: 0;
+    min-height: 100%;
+    background: var(--surface-ground);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+    text-decoration: none;
+}
+
+.p-toast {
+    &.p-toast-top-right,
+    &.p-toast-top-left,
+    &.p-toast-top-center {
+        top: 85px;
+    }
+}

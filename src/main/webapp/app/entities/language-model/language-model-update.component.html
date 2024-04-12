@@ -1,0 +1,182 @@
+<p-toast [style]="{marginTop: '80px'}"/>
+
+<div class="card">
+
+    <h2 id="genie-language-heading">
+        @if (languageModel?.id) {
+            Edit
+        } @else {
+            Create
+        } Language Model
+    </h2>
+
+    <form name="editForm"
+          role="form"
+          novalidate
+          (ngSubmit)="save()"
+          [formGroup]="editForm">
+
+        <div class="grid p-fluid">
+
+            <div class="col-12 md:col-4 form-group">
+                <span class="p-float-label">
+                    <p-dropdown [options]="modelTypes"
+                                optionLabel="label"
+                                optionValue="value"
+                                formControlName="modelType"
+                                placeholder="Select Model Type"
+                                [showClear]="true"
+                                (onChange)="onModelTypeChange($event)"
+                                id="field_model_type"/>
+                    <label class="form-control-label"
+                           for="field_model_type">Provider</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-4 field">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_name"
+                           formControlName="name"/>
+                    <label for="field_name">Name</label>
+                </span>
+            </div>
+
+
+            <div class="col-12 md:col-4 form-group">
+                <p-checkbox [binary]="true"
+                            formControlName="apiKeyRequired"
+                            label="Api Key Required"
+                            id="field_key_required"/>
+            </div>
+
+            <div class="col-12 field">
+                <span class="p-float-label">
+                    <textarea pInputTextarea
+                              type="text"
+                              col="80"
+                              rows="3"
+                              id="field_description"
+                              formControlName="description"></textarea>
+                    <label class="form-control-label"
+                           for="field_description">Description</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-4 form-group">
+                <span class="p-float-label">
+                    <p-inputNumber
+                           [min]="1"
+                           type="text"
+                           id="field_params"
+                           formControlName="paramsSize"/>
+                    <label class="form-control-label"
+                           for="field_params">Params Size (in Billions)</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-4 form-group">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_version"
+                           formControlName="version"/>
+                    <label class="form-control-label"
+                           for="field_version">Version</label>
+                </span>
+            </div>
+
+
+            <div class="col-12 md:col-4 form-group">
+                <p-checkbox [binary]="true"
+                            formControlName="tokens"
+                            label="Tokens"
+                            id="field_is_tokens"/>
+                <div>
+                    <small>If false then it's characters!</small>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-4 form-group">
+                <span class="p-float-label">
+                    <p-inputNumber
+                           [min]="1"
+                           type="text"
+                           id="field_context"
+                           formControlName="contextWindow"/>
+                    <label class="form-control-label"
+                           for="field_context">Max. Context Window (per 1K)</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-4 form-group">
+                <span class="p-float-label">
+                    <p-inputNumber
+                           mode="decimal"
+                           [min]="0"
+                           [minFractionDigits]="2"
+                           [maxFractionDigits]="2"
+                           id="field_costInput"
+                           formControlName="costInput1M"/>
+                    <label class="form-control-label"
+                           for="field_costInput">Cost 1M Input (in USD)</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-4 form-group">
+                <span class="p-float-label">
+                    <p-inputNumber
+                           mode="decimal"
+                           [min]="0"
+                           [minFractionDigits]="2"
+                           [maxFractionDigits]="2"
+                           id="field_costOutput"
+                           formControlName="costOutput1M"/>
+                    <label class="form-control-label"
+                           for="field_costOutput">Cost 1M Output (in USD)</label>
+                </span>
+            </div>
+
+            <div class="col-12">
+                    <span class="p-float-label">
+                        <input pInputText
+                               type="text"
+                               id="field_website"
+                               formControlName="website"/>
+                        <label class="form-control-label"
+                               for="field_website">Website</label>
+                    </span>
+            </div>
+
+            @if (ollamaSelected()) {
+                <div class="col-12">
+                    <span class="p-float-label">
+                        <input pInputText
+                               type="text"
+                               id="field_base_url"
+                               formControlName="baseUrl"/>
+                        <label class="form-control-label"
+                               for="field_base_url">API URL</label>
+                    </span>
+                </div>
+            }
+
+            <div class="col-12 md:col-6">
+                <p-button id="cancel-save"
+                          icon="pi pi-ban"
+                          label="Cancel"
+                          (click)="previousState()"/>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <p-button id="save-entity"
+                          type="submit"
+                          icon="pi pi-check"
+                          severity="warning"
+                          label="Save"
+                          [disabled]="editForm.invalid"/>
+            </div>
+        </div>
+    </form>
+</div>

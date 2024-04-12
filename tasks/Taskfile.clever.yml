@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+tasks:
+
+  is-installed:
+    internal: true
+    silent: true
+    desc: Check if Clever CLI is installed
+    preconditions:
+      - sh: scripts/verify-clever.sh
+        msg: "Clever CLI is not installed. Use `task env:setup` to install it."
+
+  install:
+    internal: true
+    silent: true
+    desc: Install Clever CLI
+    status:
+      - scripts/verify-clever.sh
+    cmds:
+      - scripts/setup-clever.sh
+
+  check:
+    internal: true
+    silent: true
+    desc: Verify the Clever CLI environment setup
+    cmds:
+      - scripts/verify-clever.sh

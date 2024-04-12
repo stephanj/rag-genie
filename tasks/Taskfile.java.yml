@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+vars:
+  JAVA_VERSION:
+    sh: xpath -q -e '//project/properties/java.version//text()' pom.xml
+
+tasks:
+
+  is-installed:
+    internal: true
+    silent: true
+    desc: Check if Java is installed
+    requires:
+      vars: [JAVA_VERSION]
+    preconditions:
+      - sh: scripts/verify-java.sh {{.JAVA_VERSION}}
+        msg: "java isn't installed in version {{.JAVA_VERSION}}.  Use `task env:setup` to install it."
+
+  install:
+    internal: true
+    silent: true
+    desc: Install Java
+    requires:
+      vars: [JAVA_VERSION]
+    status:
+      - scripts/verify-java.sh {{.JAVA_VERSION}}
+    cmds:
+      - scripts/setup-java.sh {{.JAVA_VERSION}}
+
+  check:
+    internal: true
+    silent: true
+    desc: Verify the Java environment setup
+    requires:
+      vars: [JAVA_VERSION]
+    cmds:
+      - scripts/verify-java.sh {{.JAVA_VERSION}}

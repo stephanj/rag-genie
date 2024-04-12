@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<solver xmlns="https://timefold.ai/xsd/solver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://timefold.ai/xsd/solver https://timefold.ai/xsd/solver/solver.xsd">
+    <!-- Tabu Search performs much better than Late Acceptance (default algo) on this use case - TODO still true? -->
+    <constructionHeuristic/>
+    <localSearch>
+        <localSearchType>TABU_SEARCH</localSearchType>
+    </localSearch>
+</solver>

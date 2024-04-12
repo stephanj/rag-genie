@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <!-- ChangeSet for the creation of the UserAPIKey table -->
+    <changeSet id="20240903-1" author="stephan">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="genie_user_api_key"/>
+            </not>
+        </preConditions>
+
+        <!-- Creation of the abstract auditing fields -->
+        <createTable tableName="genie_user_api_key">
+
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="key_mask" type="varchar(10)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="language_type" type="varchar(25)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="api_key" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="last_used" type="timestamp with time zone"/>
+
+            <column name="created_by" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_date" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="last_modified_by" type="varchar(50)"/>
+
+            <column name="last_modified_date" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+
+            <!-- User foreign key column -->
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Adding a foreign key constraint to reference the User table -->
+        <addForeignKeyConstraint constraintName="fk_user_api_key_user"
+                                 baseTableName="genie_user_api_key"
+                                 baseColumnNames="user_id"
+                                 referencedTableName="genie_user"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+</databaseChangeLog>

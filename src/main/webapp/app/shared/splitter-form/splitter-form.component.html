@@ -1,0 +1,53 @@
+<p-toast/>
+<form [formGroup]="splitterForm" (ngSubmit)="handleSplitText()" novalidate>
+    <div class="grid p-fluid">
+        <div class="field col-12">
+                <span class="p-float-label">
+                    <p-dropdown [options]="splitterOptions"
+                                formControlName="strategy"
+                                (onChange)="changeStrategy($event)"
+                                placeholder="Select splitter strategy">
+                        <ng-template let-item pTemplate="selectedItem">
+                            <div>{{ item.label}}</div>
+                            <small>{{ item.description }}</small>
+                        </ng-template>
+                        <ng-template let-item pTemplate="item">
+                            <div>{{ item.label }}</div>
+                            <small>{{ item.description }}</small>
+                        </ng-template>
+                    </p-dropdown>
+                </span>
+        </div>
+
+        @if (showChunkSizing) {
+            <div class="field col-6">
+                    <span class="p-float-label">
+                        <p-inputNumber id="chunkSize"
+                                       formControlName="chunkSize"
+                                       [min]="10"/>
+                        <label for="chunkSize">Chunk size</label>
+                    </span>
+            </div>
+        }
+
+        @if (showChunkSizing) {
+            <div class="field col-6">
+                    <span class="p-float-label">
+                        <p-inputNumber id="chunkOverlap"
+                                       inputId="horizontal"
+                                       formControlName="chunkOverlap"
+                                       [min]="0"/>
+                        <label for="chunkOverlap">Chunk Overlap</label>
+                    </span>
+            </div>
+        }
+
+        @if (showSplitButton) {
+            <div class="field col-12">
+                <p-button type="submit"
+                          [disabled]="splitterForm.invalid"
+                          label="Split"/>
+            </div>
+        }
+    </div>
+</form>

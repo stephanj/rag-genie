@@ -1,0 +1,149 @@
+<p-toast [style]="{marginTop: '80px'}"/>
+
+<div class="card">
+
+    <h2 id="genie-language-heading">Evaluation Result</h2>
+
+    <form name="editForm"
+          role="form"
+          novalidate
+          [formGroup]="editForm">
+
+        <div class="grid p-fluid">
+
+            <div class="col-12 field">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_created"
+                           formControlName="createdOn"/>
+                    <label for="field_created">Created</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-8 field">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_question"
+                           formControlName="question"/>
+                    <label for="field_question">Question</label>
+                </span>
+            </div>
+
+            <div class="col-12 md:col-4 field">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_embedding"
+                           formControlName="embeddingName"/>
+                    <label for="field_embedding">Embedding Model</label>
+                </span>
+            </div>
+
+            <div class="col-12 field">
+                <span class="p-float-label">
+                    <textarea pInputTextarea
+                              type="text"
+                              cols="80"
+                              rows="8"
+                              id="field_answer"
+                              formControlName="answer"></textarea>
+                    <label for="field_answer">Expected Answer</label>
+                </span>
+            </div>
+
+            <div class="col-12 field">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_keywords"
+                           formControlName="keywords"/>
+                    <label for="field_keywords">Expected Keywords</label>
+                </span>
+            </div>
+
+            <div class="col-12 field md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_model"
+                           formControlName="modelName"/>
+                    <label for="field_model">Model</label>
+                </span>
+            </div>
+
+            <div class="field col-12 md:col-4">
+                <span class="p-float-label">
+                    <p-inputNumber formControlName="keywordMatch"
+                                   inputId="percent" suffix="%"
+                                   id="keywordMatch_field"/>
+                    <label for="keywordMatch_field">Keyword Match</label>
+                    @if (evaluationResult?.keywordMatch !== 100.0) {
+                        <span style="color:red">Missing keywords: {{missingKeywords}}</span>
+                    } @else {
+                        <small>How many keywords were matched?</small>
+                    }
+                </span>
+            </div>
+
+            <div class="field col-12 md:col-4">
+                <span class="p-float-label">
+                    <p-inputNumber formControlName="similarityScore"
+                                   mode="decimal"
+                                   inputId="percent" suffix="%"
+                                   id="similarityScore_field"/>
+                    <label for="similarityScore_field">Similarity score with expected answer</label>
+                </span>
+            </div>
+
+            <div class="col-12 field">
+                <span class="p-float-label">
+                    <textarea pInputTextarea
+                              type="text"
+                              cols="80"
+                              rows="10"
+                              id="field_model_answer"
+                              formControlName="model_answer"></textarea>
+                    <label for="field_model_answer">Model Answer</label>
+                </span>
+            </div>
+
+            <div class="col-12 field md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_inputTokens"
+                           formControlName="inputTokens"/>
+                    <label for="field_model">Input Tokens</label>
+                </span>
+            </div>
+
+            <div class="col-12 field md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_outputTokens"
+                           formControlName="outputTokens"/>
+                    <label for="field_model">Output Tokens</label>
+                </span>
+            </div>
+
+            <div class="col-12 field md:col-4">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_cost"
+                           formControlName="cost"/>
+                    <label for="field_model">Cost</label>
+                </span>
+            </div>
+
+            <div class="col-12">
+                <p-button id="cancel-save"
+                          label="Back"
+                          (click)="previousState()"/>
+            </div>
+        </div>
+    </form>
+</div>

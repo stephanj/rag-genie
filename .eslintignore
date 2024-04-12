@@ -1,0 +1,11 @@
+node_modules
+dist
+jest.config.js
+fixtures
+coverage
+__snapshots__
+/src/test/
+/src/php/
+/src/main/webapp/assets/
+/src/main/webapp/app/jhipster/*
+*.html

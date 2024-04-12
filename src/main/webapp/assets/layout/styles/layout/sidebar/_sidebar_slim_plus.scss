@@ -1,0 +1,215 @@
+@media screen and (min-width: $breakpoint) {
+    .layout-container {
+        &.layout-slim-plus {
+            .layout-sidebar {
+                width: 7rem;
+                overflow: visible;
+                z-index: 998;
+
+                .layout-menu-container {
+                    overflow: auto;
+
+                    &::-webkit-scrollbar {
+                        display: none;
+                    }
+                }
+            }
+
+            .layout-topbar {
+                .layout-topbar-start {
+                    width: 7rem;
+
+                    .layout-topbar-logo {
+                        .layout-topbar-logo-full {
+                            display: none;
+                        }
+
+                        .layout-topbar-logo-slim {
+                            display: block;
+                        }
+                    }
+
+                    .layout-menu-button {
+                        display: none;
+                    }
+                }
+            }
+
+            .layout-content-wrapper {
+                margin-left: 7rem;
+            }
+
+            .layout-menu {
+                padding: 1rem 0;
+                ul {
+                    display: none;
+                }
+                li.active-menuitem {
+                    > ul {
+                        display: block;
+                    }
+                }
+
+                .layout-root-menuitem {
+                    margin: .75rem 0;
+                    
+                    &:first-child {
+                        margin-top: 0;
+                    }
+
+                    &:last-child {
+                        margin-top: 0;
+                    }
+
+                    > .layout-menuitem-root-text {
+                        display: none;
+                    }
+
+                    > a {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        text-align: center;
+                        border-radius:var(--border-radius);
+                        cursor: pointer;
+                        outline: none;
+                        transition: background-color var(--transition-duration);
+                        width: auto;
+                        height: auto;
+                        margin: 0 auto 1rem auto;
+                        padding: 0.75rem 0;
+
+                        .layout-submenu-toggler {
+                            display: none;
+                        }
+
+                        .layout-menuitem-icon {
+                            font-size: 1.5rem;
+                            color: var(--menuitem-text-color);
+                        }
+
+                        .layout-menuitem-text {
+                            font-size: 0.875rem;
+                            display: block;
+                            margin-top: 0.25rem;
+                            color: var(--menuitem-text-color);
+                        }
+
+                        &:hover {
+                            background-color: var(--menuitem-hover-bg);
+                        }
+                    }
+
+                    > ul {
+                        position: absolute;
+                        left: 7rem;
+                        top: 0;
+                        min-width: 15rem;
+                        background-color: var(--menu-bg);
+                        border-radius: var(--border-radius);
+                        padding: .5rem 0;
+                        max-height: 20rem;
+                        overflow: auto;
+                        z-index: 999;
+                        box-shadow: 0 5px 5px -3px rgba(0,0,0,.2), 0 8px 10px 1px rgba(0,0,0,.14), 0 3px 14px 2px rgba(0,0,0,.12);
+    
+                        &::-webkit-scrollbar {
+                            display: none;
+                        }
+                        
+                        a {
+                            padding-right: .5rem;
+                        }
+
+                        li {
+                            a {
+                                padding-left: 0.5rem;
+                            }
+            
+                            li {
+                                a {
+                                    padding-left: 1rem;
+                                }
+            
+                                li {
+                                    a {
+                                        padding-left: 1.5rem;
+                                    }
+            
+                                    li {
+                                        a {
+                                            padding-left: 2rem;
+                                        }
+            
+                                        li {
+                                            a {
+                                                padding-left: 2.5rem;
+                                            }
+            
+                                            li {
+                                                a {
+                                                    padding-left: 3rem;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .layout-menu-profile {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                > button {
+                    width: 3rem;
+                    height: 3rem;
+                    padding: 0;
+                    border-radius: 50%;
+                    justify-content: center;
+                    margin: .75rem 0;
+
+                    span, i {
+                        display: none;
+                    }
+                }
+
+                > ul {
+                    > li {
+                        margin: .75rem 0;
+
+                        &:first-child {
+                            margin-top: 0;
+                        }
+
+                        > button {
+                            width: 3rem;
+                            height: 3rem;
+                            padding: 0;
+                            justify-content: center;
+                            border-radius: 50%;
+
+                            > i {
+                                font-size: 1.5rem;
+                                margin-right: 0;
+                            }
+
+                            > span {
+                                display: none;
+                            }
+                        }
+
+                        &:last-child {
+                            margin-bottom: 1rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

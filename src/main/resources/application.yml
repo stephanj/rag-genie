@@ -1,0 +1,276 @@
+# ===================================================================
+# Spring Boot configuration.
+#
+# These configuration values will be overridden by the Spring profile you use,
+# ===================================================================
+
+# ===================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+
+# Log levels per package
+
+logging:
+  level:
+    ch.qos.logback: WARN
+    com.amazonaws: WARN
+    com.devoxx.genie: DEBUG
+    com.ehcache.core: WARN
+    com.google.api.client: WARN
+    com.sun: WARN
+    com.zaxxer: WARN
+    io.github.jhipster: INFO
+    io.github: WARN
+    io.grpc.netty.shaded: WARN
+    io.grpc: WARN
+    io.netty: WARN
+    io.opencensus: WARN
+    io.undertow.websockets.jsr: ERROR
+    io.undertow: WARN
+    java.lang.ProcessBuilder: WARN
+    javax.activation: WARN
+    javax.mail: WARN
+    javax.management.remote: WARN
+    javax.xml.bind: WARN
+    jdk.internal.httpclient: WARN
+    liquibase: WARN
+    LiquibaseSchemaResolver: INFO
+    org.apache.catalina.startup.DigesterFactory: OFF
+    org.apache: WARN
+    org.bson: WARN
+    org.drools: WARN
+    org.ehcache.core: WARN
+    org.ehcache: WARN
+    org.hibernate.ejb.HibernatePersistence: OFF
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.validator: WARN
+    org.hibernate: WARN
+    org.kie: WARN
+    org.postgresql.jdbc: WARN
+    org.postgresql: WARN
+    org.springframework.cache: WARN
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.springframework: WARN
+    org.xnio: WARN
+    ROOT: INFO
+    springfox: WARN
+    sun.rmi.transport: WARN
+    sun.rmi: WARN
+
+management:
+  endpoint:
+    health:
+      show-details: when-authorized
+  endpoints:
+    web:
+      base-path: /management
+      exposure:
+        include: ['configprops', 'env', 'health', 'info', 'jhimetrics', 'logfile', 'loggers', 'prometheus', 'threaddump']
+  info:
+    git:
+      mode: full
+  health:
+    mail:
+      enabled: false # When using the MailService, configure an SMTP server and set this to true
+  metrics:
+    enable:
+      http: true
+      jvm: true
+      logback: true
+      process: true
+      system: true
+    distribution:
+      percentiles-histogram:
+        all: true
+      percentiles:
+        all: 0, 0.5, 0.75, 0.95, 0.99, 1.0
+  prometheus.metrics.export.enabled: true # When using the MailService, configure an SMTP server and set this to true
+  prometheus.metrics.export.step: 60
+  observations:
+    key-values:
+      application: ${spring.application.name}
+
+server:
+  port: 8080
+  tomcat:
+    connection-timeout: 180
+  servlet:
+    session:
+      cookie:
+        http-only: true
+
+spring:
+
+  application:
+    name: Genie
+
+  data:
+    jpa:
+      repositories:
+        bootstrap-mode: deferred
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://${genie.database.hostname}:${genie.database.port}/${genie.database.name}
+    username: ${genie.database.username}
+    password: ${genie.database.password}
+    hikari:
+      poolName: Hikari
+      auto-commit: false
+      validation-timeout: 5000 # 5 seconds (Default is 5 seconds)
+      connection-timeout: 30000 # 30 seconds (Default is 30 seconds)
+      idle-timeout: 60000 # 1 minutes (Default is 10 minutes)
+      max-lifetime: 300000 # 5 minutes (Default is 30 minutes)
+
+  jmx:
+    enabled: false
+
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate.cache.use_query_cache: false
+      hibernate.cache.use_second_level_cache: true
+      hibernate.generate_statistics: true
+      hibernate.id.db_structure_naming_strategy: legacy
+      hibernate.id.new_generator_mappings: true
+      hibernate.javax.cache.missing_cache_strategy: create
+      hibernate.jdbc.time_zone: UTC
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+        implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+    show-sql: false
+
+  liquibase:
+    enabled: ${genie.liquibase.enabled}
+    change-log: classpath:/config/liquibase/change-log-master.xml
+
+  # EMAIL
+  mail:
+    host: ${genie.mail.host}
+    username: ${genie.mail.username}
+    password: ${genie.mail.password}
+    port: ${genie.mail.port}
+    properties:
+      mail:
+        smtp:
+          auth: ${genie.mail.auth}
+          port: ${genie.mail.port}
+        transport:
+          protocol: smtp
+
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+
+  messages:
+    basename: i18n/messages
+
+  profiles:
+    default: dev
+    active: @spring.profiles.active@
+
+  task:
+    execution:
+      thread-name-prefix: genie-task-
+      pool:
+        core-size: 2
+        max-size: 50
+        queue-capacity: 10000
+    scheduling:
+      thread-name-prefix: genie-scheduling-
+      pool:
+        size: 2
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            clientId: ${google.id}
+            clientSecret: ${google.secret}
+            redirect-uri: '{baseUrl}/oauth2/callback/{registrationId}'
+            scope:
+              - email
+              - profile
+
+  threads:
+    virtual:
+      enabled: true
+
+  thymeleaf:
+    cache: false
+    mode: HTML
+
+# Swagger - SpringDoc OpenAPI
+springdoc:
+  packagesToScan: com.devoxx.genie.web.rest
+  pathsToMatch: /api/**
+
+# ===================================================================
+# JHipster specific properties (To De-jhipsterize)
+#
+# Full reference is available at: https://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+jhipster:
+  clientApp:
+    name: 'genieApp'
+  mail:
+    from: genie@localhost
+  metrics:
+    logs: # Reports metrics in the logs
+      enabled: false
+      report-frequency: 60 # in seconds
+
+# ===================================================================
+# Application specific properties
+# ===================================================================
+
+# Devoxx Genie
+genie:
+
+  # DATABASE
+  database:
+    hostname: ${POSTGRESQL_ADDON_HOST}
+    name: ${POSTGRESQL_ADDON_DB}
+    password: ${POSTGRESQL_ADDON_PASSWORD}
+    port: ${POSTGRESQL_ADDON_PORT}
+    username: ${POSTGRESQL_ADDON_USER}
+    vector:
+      table-name: "genie_document"
+      dimension: 384
+
+  firebase:
+    credentials: ${FIREBASE_CREDENTIALS}
+
+  liquibase:
+    enabled: ${GENIE_LIQUIBASE_ENABLED:true}
+
+  mail:
+    host: smtp.mailtrap.io
+    username: ${TEST_MAIL_USERNAME}
+    password: ${TEST_MAIL_PASSWORD}
+    port: 2525
+    auth: false
+
+file:
+  upload:
+    path: /tmp
+
+security:
+  key:
+    secret: ${GENIE_SECURITY_KEY_SECRET}
+
+# Open AI API Key
+openai:
+  api-key: ${OPENAPI_API_KEY}

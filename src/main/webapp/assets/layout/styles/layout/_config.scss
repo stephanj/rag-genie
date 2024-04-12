@@ -1,0 +1,13 @@
+.layout-config-button.p-button {
+    z-index: 999;
+    position: fixed;
+    top: 20%;
+    right: 0;
+    width: auto;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+
+    .p-button-icon {
+        font-size: 2rem;
+    }
+}

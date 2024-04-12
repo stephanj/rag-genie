@@ -1,0 +1,42 @@
+<div class="card grid">
+
+    <div class="col-12">
+        <h2>
+            <fa-icon [icon]="faForward"/>
+            <span class="ml-2">GET STARTED...</span>
+        </h2>
+    </div>
+
+    <div class="col-12">
+        <h3>Welcome</h3>
+        <p>Import your data, select a splitting strategy and explore it in searches, Q&A or chat bot sessions.</p>
+        <p>You can also add securely your API keys to use OpenAI, Claude, Mistral, Groq, Cohere or SerpAPI <i class="pi pi-arrow-circle-right mr-2"></i><a routerLink="/api-keys" class="p-menuitem-link">HERE</a></p>
+        <p-steps [model]="firstSteps"
+                 [readonly]="false"
+                 [activeIndex]="1"/>
+    </div>
+</div>
+
+<div class="card grid">
+    <div class="col-12 md:col-6">
+        <h3>ToDo's</h3>
+        <UL>
+            <LI class="field">Implement advanced splitting strategies (Semantic, Agentic, Raptor, ...)</LI>
+            <LI class="field">Add BM25 ReRanking option</LI>
+            <LI class="field">Support function method tool retrievers</LI>
+            <lI class="field">Add ChatBot</lI>
+            <lI class="field">Support Gemini model with API Key 🎁️</lI>
+        </UL>
+    </div>
+
+    <div class="col-12 md:col-6">
+        <h3>Extra RAG features</h3>
+        <UL>
+            <LI class="field">Query Formulation</LI>
+            <LI class="field">Contextual Enrichment</LI>
+            <LI class="field">Answer Synthesis</LI>
+            <LI class="field">ReRanking of found vector documents</LI>
+            <LI class="field">Refinement (improving the quality and relevance of the generated responses)</LI>
+        </UL>
+    </div>
+</div>

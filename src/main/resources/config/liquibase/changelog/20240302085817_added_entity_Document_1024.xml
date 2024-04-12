@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <property name="now" value="current_timestamp" dbms="postgresql"/>
+    <property name="clobType" value="clob" dbms="postgresql"/>
+
+    <!--
+        Added the entity Content.
+    -->
+    <changeSet id="20240402085817-1" author="stephan">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="genie_document_1024"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="genie_document_1024">
+            <column name="embedding_id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="text" type="${clobType}">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="embedding" type="VECTOR(1024)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="metadata" type="json">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+</databaseChangeLog>

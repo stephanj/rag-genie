@@ -1,0 +1,76 @@
+<p-toast [style]="{marginTop: '80px'}"/>
+
+<div class="card">
+
+    <h2 id="genie-language-heading">Add/Update Evaluation</h2>
+
+    <form name="editForm"
+          role="form"
+          novalidate
+          (ngSubmit)="save()"
+          [formGroup]="editForm">
+
+        <div class="grid p-fluid">
+
+            <div class="col-12 field">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_name"
+                           formControlName="name"/>
+                    <label for="field_name">Short name</label>
+                </span>
+            </div>
+
+            <div class="col-12 field">
+                <span class="p-float-label">
+                    <input pInputText
+                           type="text"
+                           id="field_question"
+                           formControlName="question"/>
+                    <label for="field_question">Question to evaluate</label>
+                </span>
+            </div>
+
+            <div class="col-12 field">
+                <span class="p-float-label">
+                    <textarea pInputTextarea
+                              type="text"
+                              cols="80"
+                              rows="10"
+                              id="field_answer"
+                              formControlName="answer"></textarea>
+                    <label class="form-control-label"
+                           for="field_answer">Expected Answer</label>
+                </span>
+            </div>
+
+            <div class="col-12 form-group">
+                <span class="p-float-label">
+                     <p-chips formControlName="keywords"
+                              id="field_keywords"
+                              separator=","/>
+                    <label class="form-control-label"
+                           for="field_keywords">Keywords in answer</label>
+                </span>
+                <small>We'll search for the keywords in the answer, when all are found you get a 100% matching score</small>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <p-button id="cancel-save"
+                          icon="pi pi-ban"
+                          label="Cancel"
+                          (click)="previousState()"/>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <p-button id="save-entity"
+                          type="submit"
+                          icon="pi pi-check"
+                          severity="warning"
+                          label="Save"
+                          [disabled]="editForm.invalid"/>
+            </div>
+        </div>
+    </form>
+</div>

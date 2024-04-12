@@ -1,0 +1,104 @@
+<p-toast/>
+<p-panel>
+    <div class="grid">
+        <div class="col-12">
+            <p>Text splitting enables the creation of documents (text chunks) that can be stored in a vector database, facilitating similarity searches.</p>
+            <p *ngIf="contentSelection && contentSelection.length > 0">Select content to split be selecting the radio button.</p>
+            <genie-content-list #contentList
+                              [showActions]="true"
+                              (contentSelection)="onContentSelect($event)"
+                              [selectEnabled]="true"/>
+        </div>
+    </div>
+</p-panel>
+
+@if (contentSelection && contentSelection.length > 0) {
+    <br>
+    <p-panel header="Splitter" [toggleable]="true" [collapsed]="splitterPanelClosed">
+        <p>Split your content using various strategies and visually see what the result is of the selected approach.</p>
+        <p>Language models perform optimally with concentrated content.</p>
+        <genie-splitter-form #splitter
+                           [contentSelection]="contentSelection"
+                           (splitText)="splitText($event)"/>
+    </p-panel>
+}
+
+@if (chunks && chunks.length > 0) {
+    <br>
+    <p-panel id="output" [header]="getPanelTitleWithChunkCount()" [toggleable]="true" [collapsed]="visualPanelClosed">
+        <p>The document output based on the selected splitter strategy.</p>
+
+        @if (!summarizeEnabled) {
+            <p-button label="Store in DB"
+                      icon="pi pi-file-import"
+                      severity="danger"
+                      (click)="displayStoreDialog = true"
+                      pTooltip="Store the chunks in the vector database"
+                      [disabled]="saving || !chunks || chunks.length === 0"/>
+        }
+
+        @if (saving) {
+            <div class="col-12">
+                <p-progressBar mode="indeterminate" [style]="{height: '3px'}"/>
+            </div>
+        }
+
+        <div class="chunked-text mt-3">
+            <p-scrollPanel [style]="{ width: '100%', height: '450px' }">
+                <span *ngFor="let chunk of styledChunks">
+                    <i class="pi pi-language ml-2 mr-2"> {{ chunk.content?.length }} chars = </i>
+                    <span [ngClass]="chunk.style">{{ chunk.content }}</span>
+                </span>
+
+            </p-scrollPanel>
+        </div>
+
+    </p-panel>
+}
+
+<p-dialog header="Store in DB"
+          [(visible)]="displayStoreDialog"
+          [modal]="true"
+          [closable]="false"
+          [style]="{width: '450px'}">
+    <div class="grid">
+        <div class="col-12">
+            <p>Which embedding do you want to use?</p>
+        </div>
+        <div class="col-12 p-fluid">
+            <p-dropdown [options]="embeddingModels"
+                        [(ngModel)]="selectedEmbedding"
+                        appendTo="body"
+                        [placeholder]="'Select an embedding'">
+                <ng-template let-item pTemplate="selectedItem">
+                    <div>{{ item.name}}</div>
+                </ng-template>
+                <ng-template let-item pTemplate="item">
+                    <div>
+                        {{item.name}}
+                        <i class="pi pi-question-circle" [pTooltip]="item.description"></i>
+                    </div>
+                    <div>
+                        <small>{{item.dimSize}} dimensions | {{item.maxTokens}} max tokens</small>
+                    </div>
+                </ng-template>
+            </p-dropdown>
+            @if (hasChunkWarning()) {
+                <span class="orange">
+                    <i class="pi pi-exclamation-triangle mr-2"></i>
+                    The provided text chunk exceeds the maximum token limit for embedding.
+                    Please reduce the size of your text to ensure accurate processing and results.
+                </span>
+            }
+        </div>
+    </div>
+    <p-footer>
+        <p-button icon="pi pi-check"
+                  (click)="storeChunksInDB()"
+                  severity="danger"
+                  label="Store"/>
+        <p-button icon="pi pi-times"
+                  (click)="displayStoreDialog = false"
+                  label="Cancel"/>
+    </p-footer>
+</p-dialog>

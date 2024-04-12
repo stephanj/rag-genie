@@ -1,0 +1,31 @@
+<p-autoComplete [suggestions]="suggestedModels"
+                (completeMethod)="searchModels($event)"
+                (onSelect)="modelSelected($event)"
+                (onClear)="modelCleared()"
+                [multiple]="multiple"
+                [showClear]="true"
+                [dropdown]="true"
+                placeholder="Filter by model name">
+    <ng-template let-item pTemplate="selectedItem">
+        <div class="text-left">
+            {{ item.type }} : {{ item.label }}
+            @if (item.size > 0) {
+                {{ item.size }}B
+            }
+            @if (item.contextWindow > 0) {
+                ({{ item.contextWindow }}K context window)
+            }
+        </div>
+    </ng-template>
+    <ng-template let-item pTemplate="item">
+        <div class="text-left">
+            {{ item.type }} : {{ item.label }}
+            @if (item.size > 0) {
+                {{ item.size }}B
+            }
+            @if (item.contextWindow > 0) {
+                ({{ item.contextWindow }}K context window)
+            }
+        </div>
+    </ng-template>
+</p-autoComplete>

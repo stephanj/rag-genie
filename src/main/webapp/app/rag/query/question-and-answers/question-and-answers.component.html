@@ -1,0 +1,327 @@
+<p-toast />
+<p-panel>
+    <div class="field mb-5">
+        <p>Enter your system prompt, question and select a language model.</p>
+    </div>
+    <form [formGroup]="queryForm" (ngSubmit)="processQuestion()" novalidate>
+        <div class="grid p-fluid">
+
+            <div class="field col-12">
+                <span class="p-float-label">
+                    <textarea pInputTextarea
+                              id="prompt"
+                              type="text"
+                              cols="80"
+                              rows="5"
+                              class="form-control"
+                              formControlName="prompt"
+                              placeholder="For example: You're a helpful assistant that knows everything about Java"></textarea>
+                    <label for="prompt">System Prompt</label>
+                </span>
+            </div>
+
+            <div class="field col-12">
+                <span class="p-float-label">
+                    <textarea pInputTextarea
+                              id="question"
+                              type="text"
+                              cols="80"
+                              rows="5"
+                              class="form-control"
+                              formControlName="question"
+                              placeholder="Enter your question"></textarea>
+                    <label for="question">Question</label>
+                </span>
+            </div>
+
+            <div class="field col-12 md:col-6">
+                <genie-language-model-dropdown (languageModel)="languageModelSelected($event)"/>
+            </div>
+
+            <div class="field col-12 md:col-6">
+                <p-dropdown [options]="embeddingModels"
+                            appendTo="body"
+                            placeholder="Select embedding model"
+                            formControlName="embeddingModel">
+                    <ng-template let-item pTemplate="selectedItem">
+                        <div>{{ item.name }} ({{ item.dimSize }} dim)</div>
+                    </ng-template>
+                    <ng-template let-item pTemplate="item">
+                        <div>{{ item.name }} ({{ item.dimSize }} dim)</div>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+
+            <div class="field col-12 md:col-3 text-center align-self-center">
+                <p-checkbox [binary]="true"
+                            formControlName="rerankAnswers"
+                            (onChange)="rerankResponse($event)"
+                            label="ReRank response (BM25)" />
+                <i class="ml-2 pi pi-info-circle"
+                   tooltipPosition="top"
+                   pTooltip="Only use reranked responses using BM25 and score > 0"></i>
+            </div>
+
+            <div class="field col-12 md:col-3 text-center align-self-center">
+                <p-checkbox [binary]="true"
+                            formControlName="formatAnswer"
+                            (onChange)="formatResponse($event)"
+                            label="Format response" />
+                <i class="ml-2 pi pi-info-circle"
+                   tooltipPosition="top"
+                   pTooltip="Ask the selected language model to format the answer in HTML friendly output."></i>
+            </div>
+
+            <div class="field col-12 md:col-3 text-center align-self-center">
+                <p-checkbox [binary]="true"
+                            formControlName="searchWeb"
+                            label="Search internet for answers" />
+                <i class="ml-2 pi pi-info-circle"
+                   tooltipPosition="top"
+                   pTooltip="If checked, the system will also search the web for answers. SerpAPI key is required."></i>
+            </div>
+
+            <div class="field col-12 md:col-3 text-center align-self-center">
+                <p-checkbox [binary]="true"
+                            formControlName="allDocs"
+                            (onChange)="allDocsChanged($event)"
+                            label="Include all content" />
+                <i class="ml-2 pi pi-info-circle"
+                   tooltipPosition="top"
+                   pTooltip="When selected, all available content will be used as context to answer the question.
+                   No vector documents will be used.
+                   Make sure the available window context is big enough!"></i>
+            </div>
+
+            <div class="field col-12">
+                <p-panel header="Advanced options" iconPos="start" [toggleable]="true" [collapsed]="true">
+                    <div class="grid p-fluid">
+
+                            <div class="field col-12 md:col-6">
+                                <p>Enter the minimum similarity and the maximum number of documents to use.</p>
+                                <div class="field col-12">
+                                        <span class="p-float-label">
+                                            <p-inputNumber formControlName="minScore"
+                                                           id="minScore"
+                                                           [disabled]="useAllDocs"
+                                                           suffix="%"
+                                                           [min]="1"
+                                                           [max]="100"
+                                                           placeholder="The minimum similairty score" />
+                                            <label for="minScore">Minimum similarity (1 - 100%)</label>
+                                        </span>
+                                    <small>The minimum similarity score (in %) to use in the documents search.</small>
+                                </div>
+
+                                <div class="field col-12">
+                                        <span class="p-float-label">
+                                            <p-inputNumber formControlName="maxResults"
+                                                           id="maxResults"
+                                                           [min]="1"
+                                                           [max]="20"
+                                                           [disabled]="useAllDocs"
+                                                           placeholder="Number of documents to use in prompt context" />
+                                            <label for="maxResults">Maximum documents in prompt context [1 - 20]</label>
+                                        </span>
+                                </div>
+                            </div>
+
+                        <div class="field col-12 md:col-6">
+                            <p>Select temperature and maximum tokens to use.</p>
+                            <div class="field col-12">
+                                <div class="mb-3">Temperature: {{ getTemperature() }}</div>
+                                <p-slider formControlName="temperature"
+                                          id="temp_field"
+                                          [min]="0"
+                                          [max]="1"
+                                          [step]="0.1" />
+                                <div class="grid p-fluid mt-2">
+                                    <div class="col-4">Precise</div>
+                                    <div class="col-4 text-center">Neutral</div>
+                                    <div class="col-4 text-right">Creative</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 grid">
+
+                                <div class="field col-12 md:col-6">
+                                        <span class="p-float-label">
+                                            <p-inputNumber formControlName="maxOutputTokens"
+                                                           id="maxOutputTokens"
+                                                           placeholder="The maximum output tokens" />
+                                            <label for="maxOutputTokens">Max output tokens</label>
+                                        </span>
+                                </div>
+
+                                <div class="field col-12 md:col-6">
+                                        <span class="p-float-label">
+                                            <p-inputNumber formControlName="timeout"
+                                                           id="timeout"
+                                                           placeholder="Request timeout in seconds" />
+                                            <label for="timeout">Request timeout (secs)</label>
+                                        </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p-panel>
+            </div>
+
+            <div class="field col-12 md:col-6">
+                <p-button type="submit"
+                          icon="pi pi-send"
+                          [disabled]="!queryForm.valid"
+                          label="Submit" />
+            </div>
+
+            <div class="field col-12 md:col-6">
+                <p-button type="button"
+                          icon="pi pi-dollar"
+                          [disabled]="selectedLanguageModel === null || askingQuestion || !selectedLanguageModel.apiKeyRequired"
+                          label="Calculate Cost"
+                          pTooltip="Allows you to get an estimated cost from the language model provider before proceeding"
+                          tooltipPosition="top"
+                          (click)="calcCost()" />
+            </div>
+
+            <div class="field col-12" [hidden]="!askingQuestion">
+                <p-progressBar mode="indeterminate" [style]="{height: '3px'}" />
+            </div>
+        </div>
+    </form>
+</p-panel>
+
+@if (questionResponse && !askingQuestion) {
+    <br>
+
+    <p-panel [toggleable]="true" [collapsed]="answerPanelClosed">
+        <div class="grid p-fluid">
+            <div class="col-12">
+                <h5>Answer from {{ selectedLanguageModel?.label }} ({{ selectedLanguageModel?.type }})</h5>
+            </div>
+            <div class="grid col-12">
+                <div class="col-12 md:col-3">
+                    <div class="p-text-secondary"><i class="pi pi-clock mr-2"></i>{{ getAnswerDuration() }}</div>
+                </div>
+                <div class="col-12 md:col-3">
+                    <div class="p-text-secondary">
+                        <i class="pi pi-file-import mr-2"></i>Input : {{ questionResponse.inputTokens | number: '1.0-0' }} tokens
+                        @if (questionResponse && questionResponse.costInput1M && questionResponse.costInput1M > 0) {
+                            <i class="ml-2 pi pi-info-circle"
+                               pTooltip="{{questionResponse.costInput1M}}$ per million tokens"></i>
+                        }
+                    </div>
+                </div>
+                <div class="col-12 md:col-3">
+                    <div class="p-text-secondary">
+                        <i class="pi pi-file-export mr-2"></i>Output : {{ questionResponse.outputTokens | number: '1.0-0' }} tokens
+                        @if (questionResponse && questionResponse.costOutput1M && questionResponse.costOutput1M > 0) {
+                            <i class="ml-2 pi pi-info-circle"
+                               pTooltip="{{questionResponse.costOutput1M}}$ per million tokens"></i>
+                        }
+                        <span class="ml2">({{ questionResponse.answer?.length }} chars)</span>
+                    </div>
+                </div>
+                @if (questionResponse && questionResponse.cost && questionResponse.cost > 0) {
+                    <div class="col-12 md:col-3">
+                        <div class="p-text-secondary">Cost : {{ questionResponse.cost | number : '1.4-4' }}$</div>
+                    </div>
+                }
+            </div>
+        </div>
+        @if (useAllDocs) {
+            <p>The answer is based on all available content.</p>
+        } @else {
+            <p>The answer is based on the found documents using similarity search.</p>
+        }
+        @if (questionResponse.answer) {
+            <div *ngIf="questionResponse.answer">
+                <p-messages severity="info">
+                    <ng-template pTemplate>
+                        <div [innerHTML]="questionResponse.answer"></div>
+                    </ng-template>
+                </p-messages>
+                <p-button icon="pi pi-copy"
+                          pTooltip="Copy answer to clipboard"
+                          (click)="copyAnswerToClipboard(questionResponse.answer)"/>
+            </div>
+        }
+    </p-panel>
+    <br>
+}
+
+@if (usedDocuments.length > 0 && !askingQuestion) {
+    <p-panel header="Used Documents" iconPos="start" [toggleable]="true" [collapsed]="similarityPanelClosed">
+        @if (usedDocuments.length === 0) {
+            <p>No documents found based on question.</p>
+        } @else {
+            <p-table [value]="usedDocuments">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th></th>
+                        <th id="content">Content</th>
+                        <th id="similarity">Similarity</th>
+                        <th id="action"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-document>
+                    <tr>
+                        <td>
+                            @if (document.docType === 'CONTENT') {
+                                <i class="pi pi-file"
+                                   tooltipPosition="top"
+                                   pTooltip="Content uploaded by user"></i>
+                            } @else {
+                                <i class="pi pi-globe"
+                                   tooltipPosition="top"
+                                   pTooltip="Snippet of search result"></i>
+                            }
+                        </td>
+                        <td width="80%">
+                            <div>{{ document.text }}</div>
+                            <div class="orange grid">
+                                <div class="col-6">
+                                    <a [routerLink]="['/embedding-model']">
+                                        <i class="pi pi-box mr-1 mt-2"></i>
+                                        {{questionResponse.embeddingModel?.name}} |
+                                        {{questionResponse.embeddingModel?.dimSize}} dim |
+                                        {{document.text.length}} chars
+                                    </a>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <a [routerLink]="['/content', document.contentId, 'edit']">
+                                        <i class="pi pi-file mr-1 mt-2"></i>
+                                        {{document.contentName}}
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ document.score * 100 | number: '1.3-3' }}%</td>
+                        <td class="text-right">
+                            @if (document.docType === 'CONTENT') {
+                                <button class="mr-2"
+                                        pButton
+                                        [routerLink]="['/document', document.id, questionResponse.embeddingModel?.dimSize, 'edit']"
+                                        icon="pi pi-pencil"></button>
+                                <p-button icon="pi pi-trash"
+                                          severity="danger"
+                                          (click)="deleteDocument(document)" />
+                            }
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        }
+    </p-panel>
+} @else if (!similarityPanelClosed && !askingQuestion) {
+    <p-panel [toggleable]="true" iconPos="start" [collapsed]="similarityPanelClosed">
+        <ng-template pTemplate="header">
+            <div class="grid">
+                <div class="col-12">
+                    <div class="p-panel-title">Used Documents</div>
+                </div>
+            </div>
+        </ng-template>
+        <p>No documents found based on question. Maybe increase your similarity score or number of documents to use?</p>
+    </p-panel>
+}

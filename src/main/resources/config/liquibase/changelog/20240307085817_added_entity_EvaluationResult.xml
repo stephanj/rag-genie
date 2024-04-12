@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <property name="now" value="current_timestamp" dbms="postgresql"/>
+    <property name="clobType" value="clob" dbms="postgresql"/>
+
+    <!--
+        Added the entity EvaluationResult.
+    -->
+    <changeSet id="20240307" author="stephan">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="genie_evaluation_result"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="genie_evaluation_result">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_on" type="timestamp with time zone" defaultValueComputed="CURRENT_TIMESTAMP"/>
+
+            <column name="keyword_match" type="double precision"/>
+
+            <column name="similarity_score" type="double precision"/>
+
+            <column name="min_score" type="integer"/>
+
+            <column name="max_documents" type="integer"/>
+
+            <column name="temperature" type="double precision"/>
+
+            <column name="input_tokens" type="integer"/>
+
+            <column name="output_tokens" type="integer"/>
+
+            <column name="cost" type="double precision"/>
+
+            <column name="duration_in_ms" type="bigint">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="answer" type="${clobType}">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="rerank" type="boolean" defaultValue="false">
+                <constraints nullable="false" />
+            </column>
+
+            <!-- Foreign key to genie_evaluation table -->
+            <column name="evaluation_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Foreign key to genie_language_model table -->
+            <column name="language_model_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Foreign key to genie_embedding_model table -->
+            <column name="embedding_model_reference_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="user_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Add foreign key constraints -->
+        <addForeignKeyConstraint constraintName="fk_evaluation_result_evaluation"
+                                 baseTableName="genie_evaluation_result" baseColumnNames="evaluation_id"
+                                 referencedTableName="genie_evaluation" referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint constraintName="fk_evaluation_result_language_model"
+                                 baseTableName="genie_evaluation_result" baseColumnNames="language_model_id"
+                                 referencedTableName="genie_language_model" referencedColumnNames="id"/>
+
+    </changeSet>
+
+    <changeSet id="20241303-2" author="stephan">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <foreignKeyConstraintExists foreignKeyName="fk_evaluation_result_user" />
+            </not>
+        </preConditions>
+
+        <addForeignKeyConstraint constraintName="fk_evaluation_result_user"
+                                 baseTableName="genie_evaluation_result" baseColumnNames="user_id"
+                                 referencedTableName="genie_user" referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20242003" author="stephan">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="fk_evaluation_result_embedding_model" />
+            </not>
+        </preConditions>
+
+        <addForeignKeyConstraint constraintName="fk_evaluation_result_embedding_model"
+                                 baseTableName="genie_evaluation_result" baseColumnNames="embedding_model_reference_id"
+                                 referencedTableName="genie_embedding_model" referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,135 @@
+# ===================================================================
+# Spring Boot configuration.
+#
+# This configuration is used for unit/integration tests.
+# ===================================================================
+
+# ===================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+
+# Log levels per package
+
+logging:
+  level:
+    ch.qos.logback: WARN
+    com.devoxx.genie: DEBUG
+    com.devoxx.genie.service: DEBUG
+    com.sun: WARN
+    com.zaxxer: WARN
+    io.github.jhipster: WARN
+    io.undertow: WARN
+    java.sql: DEBUG
+    javax.activation: WARN
+    javax.mail: WARN
+    javax.xml.bind: WARN
+    liquibase: WARN
+    LiquibaseSchemaResolver: INFO
+    org.apache.catalina.startup.DigesterFactory: OFF
+    org.apache: WARN
+    org.bson: WARN
+    org.ehcache: WARN
+    org.hibernate.ejb.HibernatePersistence: OFF
+    org.hibernate.validator: WARN
+    org.hibernate: WARN
+    org.postgresql.jdbc: WARN
+    org.springframework.cache: WARN
+    org.springframework.security: WARN
+    org.springframework.web: WARN
+    org.springframework: WARN
+
+server:
+  port: 10344
+  address: localhost
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    name: postgres
+    username: postgres
+    password: mysecretpassword
+    hikari:
+      # Configure hikari for ITs
+      maximum-pool-size: 5 # Default = 10
+      minimum-idle: 1 # Default = maximum-pool-size
+      max-lifetime: 30000 # 30 seconds (Default is 30 minutes)
+      idle-timeout: 15000 # 15 seconds (Default is 10 minutes)
+
+  jpa:
+    properties:
+      # CACHE
+      # Disable Hibernate 2nd level cache for tests
+      # javax.cache.Caching (EHCache) holds a static collection of CachingProvider-s shared between all Spring contexts if tests are run in the same JVM
+      hibernate.cache.use_second_level_cache: false
+
+  liquibase:
+    contexts: test
+
+  mail:
+    username: myusername
+    password: mysecretpassword
+
+  # spring.test.context.cache.maxSize x spring.datasource.hikari.maximum-pool-size must be <= 100 (what postgresql allows by default)
+  test:
+    context:
+      cache:
+        maxSize: 20 # Maximum cache size. Default is 32.
+
+# ===================================================================
+# JHipster specific properties (To De-jhipsterize)
+#
+# Full reference is available at: https://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+jhipster:
+  async:
+    core-pool-size: 1
+    max-pool-size: 50
+    queue-capacity: 10000
+  clientApp:
+    name: test
+  metrics:
+    logs: # Reports metrics in the logs
+      enabled: true
+  mail:
+    from: genie@devoxx.com
+    base-url: http://localhost:8080
+
+# ===================================================================
+# Application specific properties
+# ===================================================================
+
+# OAUTH
+google:
+  id: web_app
+  secret: web_app
+
+security:
+  key:
+    secret: 12345678901234567890123456789012
+
+genie:
+  config:
+    path: /tmp
+
+  mail:
+    enabled: false
+
+  llm:
+    provider:
+      cohere:
+        key: ${security.key.secret}
+
+  liquibase:
+    enabled: true
+
+  # DATABASE
+  database:
+    hostname: localhost
+    name: "postgres"
+    username: "postgres"
+    vector:
+      table-name: "genie_document"
+      dimension: 384

@@ -1,0 +1,363 @@
+
+<p-toast [style]="{marginTop: '80px'}" />
+
+<div class="card">
+    <p>Import different kinds of data ranging from text, web pages, GitHub projects or even REST API json results.</p>
+    <p>Once imported you can split the documents for similarity search or/and use the complete content for Q&A.</p>
+    <p-tabView>
+        <br>
+        <p-tabPanel header="Text">
+            <form [formGroup]="textForm" (ngSubmit)="uploadText()" novalidate>
+                <div class="grid p-fluid">
+                    <div class="field col-12">
+                        <span class="p-float-label">
+                            <input pInputText
+                                   id="label"
+                                   type="text"
+                                   class="form-control"
+                                   formControlName="name"
+                                   placeholder="Enter document name">
+                            <label for="name">Name</label>
+                        </span>
+                    </div>
+
+                    <div class="field col-12">
+                        <span class="p-float-label">
+                            <textarea pInputTextarea
+                                      id="value"
+                                      rows="10"
+                                      cols="80"
+                                      formControlName="value"
+                                      placeholder="Enter your text"></textarea>
+                            <label for="value">Text</label>
+                        </span>
+                    </div>
+
+                    <div class="field col-12">
+                        <p-button type="submit"
+                                  [disabled]="!textForm.valid || importing"
+                                  icon="pi pi-upload"
+                                  label="Submit" />
+                    </div>
+
+                    <div class="field col-12">
+                        <p-progressBar [hidden]="!importing" mode="indeterminate" [style]="{height: '3px'}"/>
+                    </div>
+                </div>
+            </form>
+        </p-tabPanel>
+
+        <p-tabPanel header="Web Page">
+            <div class="field">
+                <p>Import content from a web page.</p>
+            </div>
+            <form [formGroup]="urlForm"
+                  (ngSubmit)="uploadUrl()" novalidate>
+                <div class="grid p-fluid">
+                    <div class="field col-12 md:col-4">
+                        <span class="p-float-label">
+                            <input pInputText
+                                   id="name-url"
+                                   type="text"
+                                   class="form-control"
+                                   formControlName="name"
+                                   placeholder="Enter web page name">
+                            <label for="name-url">Web Page Name</label>
+                        </span>
+                    </div>
+
+                    <div class="field col-12 md:col-8">
+                        <span class="p-float-label">
+                            <input pInputText
+                                   id="url"
+                                   type="text"
+                                   [size]="81"
+                                   class="form-control"
+                                   formControlName="source"
+                                   placeholder="Enter the web page URL, for example https://devoxx.be/faq">
+                            <label for="url">Web Page URL</label>
+                        </span>
+                    </div>
+
+                    <div class="field col-12">
+                        <p-button type="submit"
+                                  [disabled]="!urlForm.valid || importing"
+                                  icon="pi pi-upload"
+                                  label="Submit" />
+                    </div>
+
+                    <div class="field col-12">
+                        <p-progressBar [hidden]="!importing" mode="indeterminate" [style]="{height: '3px'}"/>
+                    </div>
+                </div>
+            </form>
+
+        </p-tabPanel>
+
+        <p-tabPanel header="Web Search">
+            <div class="field">
+                <p>Import content from a web search.</p>
+            </div>
+            <form [formGroup]="searchForm"
+                  (ngSubmit)="searchQuery()" novalidate>
+                <div class="grid p-fluid">
+                    <div class="field col-12 md:col-8">
+                        <span class="p-float-label">
+                            <input pInputText
+                                   id="webSearch"
+                                   type="text"
+                                   class="form-control"
+                                   formControlName="search"
+                                   placeholder="Enter search query">
+                            <label for="webSearch">Web search query</label>
+                        </span>
+                    </div>
+
+                    <div class="field col-12 md:col-4">
+                         <span class="p-float-label">
+                            <p-inputNumber id="total"
+                                           [min]="1"
+                                           [max]="10"
+                                           [step]="1"
+                                           class="form-control"
+                                           formControlName="total"/>
+                             <label for="total">Total results</label>
+                         </span>
+                    </div>
+
+                    <div class="field col-12">
+                        <p-button type="submit"
+                                  [disabled]="!searchForm.valid || importing"
+                                  icon="pi pi-upload"
+                                  label="Submit" />
+                    </div>
+
+                    <div class="field col-12">
+                        <p-progressBar [hidden]="!importing" mode="indeterminate" [style]="{height: '3px'}"/>
+                    </div>
+                </div>
+            </form>
+
+        </p-tabPanel>
+
+        <p-tabPanel header="Files">
+            <div class="grid">
+                <div class="field col-12">
+                    <p>Import PDF, Excel or Word (.docx) documents.</p>
+                    <!--                    <p>Could use <a href="https://github.com/yoeo/guesslang" target="_blank">GuessLang</a> for classification of code.</p>-->
+                </div>
+                <div class="field col-12">
+                    <p-fileUpload name="file"
+                                  mode="basic"
+                                  [auto]="true"
+                                  id="upload_file_button"
+                                  chooseLabel="Choose a document to import"
+                                  accept=".pdf,.xls,.xlsx,.docx,.txt"
+                                  [customUpload]="true"
+                                  (uploadHandler)="uploadFile($event)"
+                                  [maxFileSize]="10000000" />
+                </div>
+            </div>
+        </p-tabPanel>
+
+        <p-tabPanel header="Open API" [disabled]="false">
+
+            <div class="grid p-fluid">
+                <form [formGroup]="urlForm" (ngSubmit)="uploadRestUrl()" novalidate>
+                    <div class="grid p-fluid">
+                        <div class="field col-12 md:col-8">
+                            <div class="field col-12">
+                                <span class="p-float-label">
+                                    <input pInputText
+                                           id="name-url2"
+                                           type="text"
+                                           class="form-control"
+                                           formControlName="name"
+                                           placeholder="Enter reference name">
+                                    <label for="name-url2">Name</label>
+                                </span>
+                            </div>
+
+                            <div class="field col-12">
+                                <span class="p-float-label">
+                                    <input pInputText
+                                           id="url2"
+                                           type="text"
+                                           [size]="81"
+                                           class="form-control"
+                                           formControlName="source"
+                                           placeholder="Enter the URL of the Open API url, for example https://dvbe23.cfp.dev">
+                                    <label for="url2">Open API URL</label>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="field col-12 md:col-4">
+                            <span class="p-float-label">
+                                <div class="field">
+                                    <p>Import content from an Open API (Swagger) enabled REST API.</p>
+                                    <p>For example : https://dvbe23.cfp.dev</p>
+                                    <p>This will trigger a call to the Open API endpoint
+                                        <a href="https://dvbe23.cfp.dev/v3/api-docs" target="_blank">https://dvbe23.cfp.dev/v3/api-docs</a></p>
+                                </div>
+                            </span>
+                        </div>
+
+                        <div class="field col-12">
+                            <p-button type="submit"
+                                      icon="pi pi-upload"
+                                      label="Submit"
+                                      [disabled]="!urlForm.valid && importing"/>
+                        </div>
+                        <div class="field col-12">
+                            <p-progressBar [hidden]="!importing" mode="indeterminate" [style]="{height: '3px'}"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </p-tabPanel>
+
+        <p-tabPanel header="GitHub">
+            <p>Import a public GitHub project.</p>
+            <form [formGroup]="urlForm"
+                  (ngSubmit)="uploadGitHubProject()" novalidate>
+                <div class="grid p-fluid">
+                    <div class="field col-12 md:col-4">
+                        <span class="p-float-label">
+                            <input pInputText
+                                   id="git-name"
+                                   type="text"
+                                   class="form-control"
+                                   formControlName="name"
+                                   placeholder="Enter GitHub project name">
+                            <label for="name-url">Project name</label>
+                        </span>
+                    </div>
+
+                    <div class="field col-12 md:col-8">
+                        <span class="p-float-label">
+                            <input pInputText
+                                   id="git-url"
+                                   type="text"
+                                   [size]="81"
+                                   class="form-control"
+                                   formControlName="source"
+                                   placeholder="Enter the GitHub project URL, for example https://github.com/java/samples">
+                            <label for="url">GitHub project URL</label>
+                        </span>
+                    </div>
+
+                    <div class="field col-12">
+                        OR
+                    </div>
+
+                    <div class="field col-12">
+                        <p-fileUpload name="file"
+                                      mode="basic"
+                                      [auto]="true"
+                                      id="upload_github_file_button"
+                                      chooseLabel="Choose a zipped GitHub project to import"
+                                      accept=".zip"
+                                      [customUpload]="true"
+                                      (uploadHandler)="uploadGitHubProjectFile($event)"
+                                      [maxFileSize]="1000000" />
+                    </div>
+
+                    <div class="field col-12">
+                        <p-button type="submit"
+                                  [disabled]="!urlForm.valid || importing"
+                                  icon="pi pi-upload"
+                                  label="Submit" />
+                    </div>
+
+                    <div class="field col-12">
+                        <p-progressBar [hidden]="!importing" mode="indeterminate" [style]="{height: '3px'}"/>
+                    </div>
+                </div>
+            </form>
+        </p-tabPanel>
+
+    </p-tabView>
+</div>
+
+@if (restEndpoints && restEndpoints.length > 0) {
+    <p-dialog header="Select fields" [(visible)]="showFieldsDialog" [modal]="true">
+        <div class="grid">
+            <div class="col-12">
+                <p>Select the fields that will be used to create REST based content documents.</p>
+            </div>
+            <div class="col-12">
+                <p-button label="Create Document"
+                          [disabled]="selectedRestFields.length == 0"
+                          (click)="createDocumentsFromRest()"/>
+            </div>
+            <div class="col-12">
+                <p-table [value]="restEndpointFields"
+                         [paginator]="totalItems > itemsPerPage"
+                         [rows]="15"
+                         (onRowSelect)="addSelectedField($event)"
+                         [rowsPerPageOptions]="[15,30]">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th id="selectField" style="width: 4rem">
+                                <p-tableCheckbox/>
+                            </th>
+                            <th id="parent">Parent</th>
+                            <th id="name">Name</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-field>
+                        <tr>
+                            <td>
+                                <p-tableCheckbox [value]="field"/>
+                            </td>
+                            <td>{{field.parentPath}}</td>
+                            <td>{{field.name}}</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </p-dialog>
+
+    <div class="card grid">
+        <div class="col-12">
+            <h4>Select REST Endpoints ({{restEndpoints.length}})</h4>
+            <p>Selected REST endpoints will be used to create documents</p>
+        </div>
+        <div class="col-12">
+            <p-progressBar [hidden]="!gettingFields" mode="indeterminate" [style]="{height: '3px'}"/>
+        </div>
+        <div class="col-12">
+            <p-table [value]="restEndpoints"
+                     [rows]="10"
+                     [paginator]="totalItems > itemsPerPage"
+                     [rowsPerPageOptions]="[5,10,20]"
+                     [(selection)]="selectedRestEndpoint"
+                     (onRowSelect)="onRestTableRowSelect($event)"
+                     dataKey="path">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th id="select" style="width: 4rem">
+                            <p-tableRadioButton/>
+                        </th>
+                        <th id="method">Method</th>
+                        <th id="operation">Operation</th>
+                        <th id="path">Path</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-endpoint>
+                    <tr>
+                        <td>
+                            <p-tableRadioButton [value]="endpoint"/>
+                        </td>
+                        <td>{{endpoint.method}}</td>
+                        <td>{{endpoint.operationId}}</td>
+                        <td>{{endpoint.path}}</td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+    </div>
+}

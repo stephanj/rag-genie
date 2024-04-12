@@ -1,0 +1,11 @@
+@use 'sass:math';
+
+$parallax__layers: 3;
+
+@for $i from 0 through $parallax__layers {
+    $x: math.div(($parallax__layers - $i), 2);
+
+    .parallax__layer__#{$i} {
+        transform: translateZ(-100 * $x + px) scale($x + 1);
+    }
+}

@@ -1,0 +1,86 @@
+# ===================================================================
+# Spring Boot configuration for the "dev" profile.
+#
+# This configuration overrides the application.yml file.
+# ===================================================================
+
+# ===================================================================
+# Standard Spring Boot properties.
+# Full reference is available at:
+# http://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+# ===================================================================
+
+# Log levels per package
+
+logging:
+  level:
+    ROOT: INFO
+    angus.activation: WARN
+    com.devoxx.genie: DEBUG
+    dev.langchain4j: DEBUG
+    io.github.jhipster: DEBUG
+    jakarta.activation: WARN
+    jdk.event.security: WARN
+
+spring:
+
+  datasource:
+    hikari:
+      minimum-idle: 5 # Default = maximum-pool-size (10)
+      max-lifetime: 30000 # 30 seconds (Default is 30 minutes)
+      idle-timeout: 15000 # 15 seconds (Default is 10 minutes)
+
+  jackson:
+    serialization:
+      indent-output: true
+
+  liquibase:
+    contexts: dev
+
+  messages:
+    cache-duration: PT1S # 1 second, see the ISO 8601 standard
+
+# ===================================================================
+# JHipster specific properties (To De-jhipsterize)
+#
+# Full reference is available at: https://www.jhipster.tech/common-application-properties/
+# ===================================================================
+
+jhipster:
+  cache: # Cache configuration
+    ehcache: # Ehcache configuration
+      time-to-live-seconds: 3600 # By default objects stay 1 hour in the cache
+      max-entries: 100 # Number of objects in each cache entry
+  mail: # specific JHipster mail property, for standard properties see MailProperties
+    from: info@devoxx.com
+    base-url: http://localhost:8080
+
+# ===================================================================
+# Application specific properties
+# ===================================================================
+
+genie:
+
+  # BCC admins in CFP.DEV emails ?
+  bcc:
+    admin: false
+
+  config:
+    path: /tmp
+
+  database:
+    name: postgres
+    hostname: 127.0.0.1
+    username: postgres
+    password: mysecretpassword
+    port: 5432
+    vector:
+      table-name: "genie_document"
+      dimension: 384
+
+  liquibase:
+    enabled: true
+
+application:
+  firebase-sdk:
+    base64-credentials: ${FIREBASE_CREDENTIALS}

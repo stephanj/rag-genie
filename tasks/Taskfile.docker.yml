@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+tasks:
+
+  is-started:
+    internal: true
+    silent: true
+    desc: Check if Docker is started
+    preconditions:
+      - sh: 'docker info > /dev/null 2>&1'
+        msg: "Docker isn't available"
+    deps:
+      - is-installed
+
+  is-installed:
+    internal: true
+    silent: true
+    desc: Check if Docker is installed
+    preconditions:
+      - sh: 'which docker'
+        msg: "Docker isn't installed"

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <property name="now" value="current_timestamp" dbms="postgresql"/>
+    <property name="clobType" value="clob" dbms="postgresql"/>
+
+    <!--
+        Added the entity Model.
+    -->
+    <changeSet id="20240229-1" author="Stephan">
+        <preConditions onFail="CONTINUE">
+            <not>
+                <tableExists tableName="genie_language_model"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="genie_language_model">
+            <column name="id" type="bigint" autoIncrement="${autoIncrement}">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false" />
+            </column>
+
+            <column name="description" type="${clobType}"/>
+
+            <column name="base_url" type="varchar(255)"/>
+
+            <column name="version" type="varchar(100)"/>
+
+            <!-- For example OpenAI, Ollama, etc. -->
+            <column name="model_type" type="varchar(100)"/>
+
+            <column name="cost_input_1m" type="double"/>
+            <column name="cost_output_1m" type="double"/>
+
+            <column name="tokens" type="boolean"/>
+
+            <column name="context_window" type="integer"/>
+
+            <column name="params_size" type="double"/>
+
+            <column name="api_key_required" type="boolean" defaultValue="false"/>
+
+            <column name="website" type="varchar(255)"/>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="20240103-1-data" author="stephan">
+        <preConditions onFail="CONTINUE">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM genie_language_model
+            </sqlCheck>
+        </preConditions>
+
+        <loadData tableName="genie_language_model"
+                  file="config/liquibase/data/genie_language_model.csv"
+                  separator=";" >
+            <column name="id" type="numeric"/>
+            <column name="name" type="string"/>
+            <column name="description" type="string"/>
+            <column name="version" type="string"/>
+            <column name="model_type" type="string"/>
+            <column name="cost_input_1m" type="double"/>
+            <column name="cost_output_1m" type="double"/>
+            <column name="context_window" type="integer"/>
+            <column name="tokens" type="integer"/>
+            <column name="params_size" type="integer"/>
+        </loadData>
+    </changeSet>
+
+</databaseChangeLog>

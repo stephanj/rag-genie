@@ -1,0 +1,103 @@
+/* PrimeNG */
+@import "../../../node_modules/primeng/resources/primeng.min.css";
+@import "../../../node_modules/primeflex/primeflex.scss";
+@import "../../../node_modules/primeicons/primeicons.css";
+
+/* You can add global styles to this file, and also import other style files */
+$gutter: 1rem; // for prime flex grid system
+$fontFamily: luciole, Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
+
+/* Layout */
+@import "assets/layout/styles/layout/layout.scss";                   // PrimeNG Ultima Layout - Angular 16
+
+/* Custom */
+
+/* Error highlight on input fields */
+input.ng-valid[required],
+textarea.ng-valid[required],
+input.ng-valid[required],
+textarea.ng-valid.required {
+  border-left: 5px solid green;
+}
+
+p-dropdown.ng-valid:not(form) {
+  & > div:first-child {
+    border-left: 5px solid green;
+  }
+}
+
+p-dropdown.ng-invalid:not(form) {
+  & > div:first-child {
+    border-left: 5px solid red;
+  }
+}
+
+input.ng-invalid:not(form),
+textarea.ng-invalid:not(form) {
+  border-left: 5px solid red;
+}
+
+img.round {
+  width: 50px;
+  height: 50px;
+  max-width: 50px;
+  max-height: 50px;
+  border-radius: 100px;
+  overflow: hidden;
+  object-fit: cover;
+}
+
+img.shadow {
+  max-width: 80px;
+  float: left;
+  margin-right: 6px;
+  margin-bottom: 2px;
+  border-radius: 100px;
+  overflow: hidden;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+img.track-icon {
+  width: 2rem;
+  height: 2rem;
+  margin-left: 0.25rem;
+}
+
+img.small-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.25rem;
+}
+
+.fa-layers-counter {
+  background-color: #ffc107;
+  color: black;
+  font-weight: bold;
+}
+
+.fa-icon-counter {
+  zoom: 160%;
+  position: relative;
+  left: 2.6rem;
+  bottom: 0.6rem;
+}
+
+// Quill Text Editor for p-editor
+p-header{
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.ql-container {
+  font-family: $fontFamily;
+  font-size: 16px;
+}
+
+.ql-toolbar.ql-snow {
+  font-family: $fontFamily;
+}
+
+button {
+  font-family: $fontFamily;
+}
+

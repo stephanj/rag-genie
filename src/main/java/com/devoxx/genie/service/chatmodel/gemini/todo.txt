@@ -1,0 +1,1 @@
+Integrate Gemini when apiKey feature is available for EU

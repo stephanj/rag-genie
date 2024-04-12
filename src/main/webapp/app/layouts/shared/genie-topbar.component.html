@@ -1,0 +1,15 @@
+<div class="layout-topbar">
+    <div class="layout-topbar-start">
+        <a class="layout-topbar-logo" routerLink="/">
+            <span class="logo-name">Genie (Beta)</span>
+        </a>
+        <a #menuButton class="layout-menu-button"
+           (click)="onMenuButtonClick()" pRipple>
+            <i class="pi pi-chevron-right"></i>
+        </a>
+
+        <a #mobileMenuButton class="layout-topbar-mobile-button" (click)="onMobileTopbarMenuButtonClick()" pRipple>
+            <i class="pi pi-ellipsis-v"></i>
+        </a>
+    </div>
+</div>

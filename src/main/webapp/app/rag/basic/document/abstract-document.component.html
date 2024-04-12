@@ -1,0 +1,87 @@
+<div class="grid">
+    <div class="col-12">
+        <p-progressBar mode="indeterminate" *ngIf="loading"/>
+    </div>
+
+    @if (entities.length > 0 || searching) {
+        <div class="col-12 md:col-4">
+            <input pInputText
+                   placeholder="Filter..."
+                   [(ngModel)]="filterValue"/>
+            @if (searching) {
+                <p-button icon="pi pi-times" (click)="clearSearch()"/>
+            } @else {
+                <p-button icon="pi pi-search" (click)="search()"/>
+            }
+        </div>
+
+        <div class="col-12 md:col-4 text-center">
+            <p-button icon="pi pi-th-large"
+                      [disabled]="entities.length <= 2"
+                      label="Visualize Embeddings (Experimental)"
+                      [routerLink]="['../visualize/', dimension]"/>
+        </div>
+
+        <div class="col-12 md:col-4 text-right">
+            <p-button icon="pi pi-trash"
+                      label="Delete All"
+                      severity="danger"
+                      (click)="deleteAll()"/>
+        </div>
+    }
+
+    <div class="col-12">
+        @if (entities.length > 0) {
+            <p-table [value]="entities"
+                     [lazy]="true"
+                     [lazyLoadOnInit]="false"
+                     [paginator]="totalItems > itemsPerPage"
+                     [alwaysShowPaginator]="false"
+                     [(rows)]= "itemsPerPage"
+                     [totalRecords]="totalItems"
+                     [paginatorPosition]="'both'"
+                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                     [showCurrentPageReport]="true"
+                     [rowsPerPageOptions]="[25, 50]"
+                     (onPage)="onChange($event)">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th width="90%">Text</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-document>
+                    <tr>
+                        <td>
+                            <div>{{ document.text }}</div>
+                            <div class="orange grid">
+                                <div class="col-6">
+                                    <a [routerLink]="['/embedding-model']">
+                                        <i class="pi pi-box mr-1 mt-2"></i>
+                                        {{document.embeddingModelName}} |
+                                        {{document.text.length}} chars
+                                    </a>
+                                </div>
+                                <div class="col-6 text-right">
+                                    <a [routerLink]="['/content', document.contentId, 'edit']">
+                                        <i class="pi pi-file mr-1 mt-2"></i>
+                                        {{document.contentName}}
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <th>
+                            <p-button class="mr-2"
+                                      [routerLink]="['/document', document.id, dimension, 'edit']"
+                                      icon="pi pi-pencil"/>
+                            <p-button severity="danger"
+                                      (click)="deleteDocument(document.id)"
+                                      icon="pi pi-trash"/>
+                        </th>
+                    </tr>
+                </ng-template>
+            </p-table>
+    } @else {
+        <p>No documents yet created.</p>
+    }
+    </div>
+</div>

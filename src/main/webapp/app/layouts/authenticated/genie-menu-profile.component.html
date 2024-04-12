@@ -1,0 +1,19 @@
+<div class="layout-menu-profile" *ngIf="account">
+    <button class="p-link" (click)="toggleMenu()" pTooltip="Profile" [tooltipDisabled]="isTooltipDisabled">
+        <img [src]="account.imageUrl || ANONYMOUS_IMG_LINK" [alt]="account.firstName" class="round">
+        <span>
+            <strong>{{ account.firstName }} {{ account.lastName }}</strong>
+        </span>
+        <i class="layout-menu-profile-toggler pi pi-fw"
+           [ngClass]="{'pi-angle-down': menuProfilePosition === 'start' || isHorizontal, 'pi-angle-up': menuProfilePosition === 'end' && !isHorizontal}"></i>
+    </button>
+
+    <ul *ngIf="menuProfileActive" [@menu]="isHorizontal ? 'overlay' : 'inline'">
+        <li pTooltip="Support" [tooltipDisabled]="isTooltipDisabled">
+            <button class="p-link" [routerLink]="['/api-keys']">
+                <i class="pi pi-key"></i>
+                <span>API Keys</span>
+            </button>
+        </li>
+    </ul>
+</div>

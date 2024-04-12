@@ -1,0 +1,12 @@
+.wrapper {
+  word-wrap: break-word; /* This is for older browsers */
+  overflow-wrap: break-word; /* This is for the most recent browsers */
+}
+
+.wrap-answer {
+  text-wrap: wrap;
+}
+
+.vote-icon {
+  color: darkgray
+}

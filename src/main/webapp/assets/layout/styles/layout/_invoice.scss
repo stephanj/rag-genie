@@ -1,0 +1,19 @@
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .layout-invoice-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+
+        * {
+            visibility: visible;
+            box-shadow: none;
+            color: #212121 !important;
+            border-color: #e4e4e4 !important;
+            background-color: transparent;
+        }
+    }
+}
