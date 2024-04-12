@@ -38,9 +38,8 @@ You can list all available tasks with:
     * default:                              📝 List all tasks
     * genie:backend:start:                  🏃 Start Genie Spring Boot backend
     * genie:backend:start:prod:             🏃 Start Genie Spring Boot backend in production mode
-    * genie:build:                          🏗️ Build the app (tests are skipped)      (aliases: build)
+    * genie:build:                          🏗️ Build the app (tests are skipped) (aliases: build)
     * genie:build:prod:                     🏗 Build the app (tests are skipped) in production mode
-    * genie:deploy:                         🚀 Trigger Clever Cloud deployment      (aliases: deploy)
     * genie:frontend:build:                 🏗️ Build Genie Node/Angular frontend
     * genie:frontend:start:                 🏃 Start Genie Node/Angular frontend
     * genie:frontend:sync:                  👀 Build Genie Node/Angular frontend in watch mode
@@ -50,9 +49,9 @@ You can list all available tasks with:
     * genie:release:major:                  📦 Release a new Genie major version                                         (aliases: release:major)
     * genie:release:minor:                  📦 Release a new Genie minor version                                         (aliases: release:minor)
     * genie:release:patch:                  📦 Release a new Genie patch version                                         (aliases: release:patch)
-    * genie:start:                          🏃 Start Genie                                                                 (aliases: start)
-    * genie:start:prod:                     🏃 Start Genie locally in production mode (triggers a full clean build)        (aliases: start:prod)
-    * genie:test:                           ✅ Test the app                                                                (aliases: test)
+    * genie:start:                          🏃 Start Genie                                                               (aliases: start)
+    * genie:start:prod:                     🏃 Start Genie locally in production mode (triggers a full clean build)      (aliases: start:prod)
+    * genie:test:                           ✅ Test the app                                                              (aliases: test)
     * clean:full:                           🧽 Clean generated code, binaries including Node and its modules
     * db:drop:                              🧽 Stop and remove all services data (PostgreSQL)
     * db:dump:                              ⬇️ Dump data from local PostgreSQL instance
