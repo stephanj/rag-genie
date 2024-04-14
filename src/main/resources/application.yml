@@ -15,7 +15,6 @@
 logging:
   level:
     ch.qos.logback: WARN
-    com.amazonaws: WARN
     com.devoxx.genie: DEBUG
     com.ehcache.core: WARN
     com.google.api.client: WARN
@@ -56,7 +55,6 @@ logging:
     org.springframework: WARN
     org.xnio: WARN
     ROOT: INFO
-    springfox: WARN
     sun.rmi.transport: WARN
     sun.rmi: WARN
 
@@ -154,20 +152,6 @@ spring:
     enabled: ${genie.liquibase.enabled}
     change-log: classpath:/config/liquibase/change-log-master.xml
 
-  # EMAIL
-  mail:
-    host: ${genie.mail.host}
-    username: ${genie.mail.username}
-    password: ${genie.mail.password}
-    port: ${genie.mail.port}
-    properties:
-      mail:
-        smtp:
-          auth: ${genie.mail.auth}
-          port: ${genie.mail.port}
-        transport:
-          protocol: smtp
-
   main:
     allow-bean-definition-overriding: true
     allow-circular-references: true
@@ -191,25 +175,9 @@ spring:
       pool:
         size: 2
 
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            clientId: ${google.id}
-            clientSecret: ${google.secret}
-            redirect-uri: '{baseUrl}/oauth2/callback/{registrationId}'
-            scope:
-              - email
-              - profile
-
   threads:
     virtual:
       enabled: true
-
-  thymeleaf:
-    cache: false
-    mode: HTML
 
 # Swagger - SpringDoc OpenAPI
 springdoc:
@@ -218,15 +186,12 @@ springdoc:
 
 # ===================================================================
 # JHipster specific properties (To De-jhipsterize)
-#
 # Full reference is available at: https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
 jhipster:
   clientApp:
     name: 'genieApp'
-  mail:
-    from: genie@localhost
   metrics:
     logs: # Reports metrics in the logs
       enabled: false
@@ -250,18 +215,8 @@ genie:
       table-name: "genie_document"
       dimension: 384
 
-  firebase:
-    credentials: ${FIREBASE_CREDENTIALS}
-
   liquibase:
     enabled: ${GENIE_LIQUIBASE_ENABLED:true}
-
-  mail:
-    host: smtp.mailtrap.io
-    username: ${TEST_MAIL_USERNAME}
-    password: ${TEST_MAIL_PASSWORD}
-    port: 2525
-    auth: false
 
 file:
   upload:
@@ -270,7 +225,3 @@ file:
 security:
   key:
     secret: ${GENIE_SECURITY_KEY_SECRET}
-
-# Open AI API Key
-openai:
-  api-key: ${OPENAPI_API_KEY}

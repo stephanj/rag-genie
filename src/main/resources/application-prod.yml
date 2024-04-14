@@ -40,7 +40,6 @@ server:
     min-response-size: 1024
 
 spring:
-
   devtools:
     restart:
       enabled: false
@@ -50,18 +49,14 @@ spring:
   liquibase:
     contexts: prod
 
-  thymeleaf:
-    cache: true
-
 # ===================================================================
 # JHipster specific properties (To De-jhipsterize)
-#
 # Full reference is available at: https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
 jhipster:
   cors:
-    allowed-origins: 'https://genie.devoxx.com,https://genie007.devoxx.com'
+    allowed-origins: '*'
     allowed-methods: '*'
     allowed-headers: 'origin,x-requested-with'
     exposed-headers: 'Authorization,Link,X-Total-Count'
@@ -74,24 +69,8 @@ jhipster:
   http:
     cache: # Used by the CachingHttpHeadersFilter
       timeToLiveInDays: 1461
-  mail: # specific JHipster mail property, for standard properties see MailProperties
-    from: no_reply@devoxx.com
-    base-url: https://genie.devoxx.com # Modify according to your server's URL
 
 # ===================================================================
 # Application specific properties
 # ===================================================================
 
-application:
-  firebase-sdk:
-    base64-credentials: ${genie.firebase.credentials}
-
-# GENIE
-genie:
-
-  mail:
-    host: in-v3.mailjet.com
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
-    port: 587
-    auth: true
