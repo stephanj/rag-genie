@@ -1,6 +1,7 @@
 package com.devoxx.genie.web.rest.vm;
 
 import com.devoxx.genie.service.dto.UserDTO;
+
 import jakarta.validation.constraints.Size;
 
 /**

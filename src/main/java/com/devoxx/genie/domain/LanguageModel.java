@@ -1,10 +1,10 @@
 package com.devoxx.genie.domain;
 
 import com.devoxx.genie.domain.enumeration.LanguageModelType;
-import jakarta.persistence.*;
 import org.hibernate.Length;
 
 import java.util.Objects;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "genie_language_model")

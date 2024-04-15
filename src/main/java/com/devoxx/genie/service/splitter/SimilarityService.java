@@ -1,9 +1,9 @@
 package com.devoxx.genie.service.splitter;
 
 import com.devoxx.genie.service.EmbeddingModelService;
+import com.devoxx.genie.service.dto.ChatModelDTO;
 import com.devoxx.genie.service.dto.DocumentDTO;
 import com.devoxx.genie.service.dto.EmbeddingModelReferenceDTO;
-import com.devoxx.genie.service.dto.ChatModelDTO;
 import com.devoxx.genie.service.dto.enumeration.DocumentType;
 import com.google.gson.JsonObject;
 import dev.langchain4j.data.embedding.Embedding;

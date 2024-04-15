@@ -1,13 +1,13 @@
 package com.devoxx.genie.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import org.hibernate.Length;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "genie_chat")

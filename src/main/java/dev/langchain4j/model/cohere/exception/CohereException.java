@@ -53,4 +53,3 @@ public class CohereException extends RuntimeException {
         }
     }
 }
-

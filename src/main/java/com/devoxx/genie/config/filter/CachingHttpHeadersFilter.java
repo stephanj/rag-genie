@@ -1,10 +1,10 @@
 package com.devoxx.genie.config.filter;
 
 import io.github.jhipster.config.JHipsterProperties;
-import jakarta.servlet.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import jakarta.servlet.*;
 
 /**
  * This filter is used in production, to put HTTP cache headers with a long (4 years) expiration time.

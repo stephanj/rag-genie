@@ -4,7 +4,6 @@ import com.devoxx.genie.service.dto.ChatModelDTO;
 import com.devoxx.genie.service.dto.LanguageModelDTO;
 import com.devoxx.genie.web.GenieWebTest;
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 

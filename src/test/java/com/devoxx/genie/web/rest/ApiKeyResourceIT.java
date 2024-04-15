@@ -10,12 +10,10 @@ import com.devoxx.genie.repository.UserApiKeyRepository;
 import com.devoxx.genie.repository.UserRepository;
 import com.devoxx.genie.service.dto.UserAPIKeyDTO;
 import com.devoxx.genie.web.GenieWebTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.Set;

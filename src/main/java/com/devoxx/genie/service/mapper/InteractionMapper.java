@@ -2,7 +2,6 @@ package com.devoxx.genie.service.mapper;
 
 import com.devoxx.genie.domain.Interaction;
 import com.devoxx.genie.service.dto.InteractionDTO;
-import lombok.Builder;
 import org.mapstruct.AnnotateWith;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

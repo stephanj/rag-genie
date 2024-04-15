@@ -1,12 +1,12 @@
 package com.devoxx.genie.domain;
 
 import com.devoxx.genie.domain.enumeration.LanguageModelType;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import org.hibernate.Length;
 
 import java.util.Objects;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "genie_embedding_model")

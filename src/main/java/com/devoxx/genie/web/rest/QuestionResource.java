@@ -2,12 +2,11 @@ package com.devoxx.genie.web.rest;
 
 import com.devoxx.genie.domain.User;
 import com.devoxx.genie.service.QuestionService;
-import com.devoxx.genie.service.dto.InteractionDTO;
 import com.devoxx.genie.service.dto.ChatModelDTO;
+import com.devoxx.genie.service.dto.InteractionDTO;
 import com.devoxx.genie.service.user.UserService;
 import com.devoxx.genie.web.rest.errors.BadRequestAlertException;
 import dev.ai4j.openai4j.OpenAiHttpException;
-import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -16,6 +15,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/api")

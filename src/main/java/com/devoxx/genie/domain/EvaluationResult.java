@@ -1,12 +1,10 @@
 package com.devoxx.genie.domain;
 
-import jakarta.persistence.*;
 import org.hibernate.Length;
 
 import java.time.ZonedDateTime;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "genie_evaluation_result")

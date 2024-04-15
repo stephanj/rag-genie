@@ -3,7 +3,6 @@ package com.devoxx.genie;
 import com.devoxx.genie.config.ApplicationProperties;
 import com.devoxx.genie.config.DefaultProfileUtil;
 import io.github.jhipster.config.JHipsterConstants;
-import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +16,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
+import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 @EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})

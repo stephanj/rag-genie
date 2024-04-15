@@ -1,14 +1,14 @@
 package com.devoxx.genie.domain;
 
 import com.devoxx.genie.domain.enumeration.ContentType;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import org.hibernate.Length;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.Objects;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "genie_content")

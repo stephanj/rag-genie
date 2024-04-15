@@ -1,11 +1,5 @@
 package com.devoxx.genie.config;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +27,12 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
 import java.io.IOException;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.NotNull;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;

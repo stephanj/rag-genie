@@ -1,7 +1,5 @@
 package com.devoxx.genie.domain;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.io.Serial;
@@ -10,6 +8,8 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Persist AuditEvent managed by the Spring Boot actuator.

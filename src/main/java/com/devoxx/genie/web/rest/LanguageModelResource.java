@@ -1,6 +1,5 @@
 package com.devoxx.genie.web.rest;
 
-import com.devoxx.genie.security.AuthoritiesConstants;
 import com.devoxx.genie.service.LanguageModelService;
 import com.devoxx.genie.service.OllamaModelHandlerService;
 import com.devoxx.genie.service.dto.LanguageModelDTO;
@@ -10,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -10,17 +10,13 @@ import com.devoxx.genie.repository.EmbeddingModelReferenceRepository;
 import com.devoxx.genie.repository.UserRepository;
 import com.devoxx.genie.service.DocumentService;
 import com.devoxx.genie.web.GenieWebTest;
-
 import org.junit.Ignore;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import java.util.List;
-
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;

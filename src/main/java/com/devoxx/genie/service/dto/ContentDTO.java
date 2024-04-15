@@ -2,7 +2,6 @@ package com.devoxx.genie.service.dto;
 
 import com.devoxx.genie.service.dto.enumeration.ContentType;
 import com.devoxx.genie.service.retriever.swagger.Field;
-import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +11,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.ZonedDateTime;
 import java.util.List;
+import jakarta.validation.constraints.NotNull;
 
 @Getter
 @Setter

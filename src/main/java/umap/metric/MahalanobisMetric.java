@@ -34,4 +34,3 @@ public class MahalanobisMetric extends Metric {
         return (float) Math.sqrt(result);
     }
 }
-

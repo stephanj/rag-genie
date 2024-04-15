@@ -1,6 +1,5 @@
 package com.devoxx.genie.web.rest.util;
 
-import jakarta.annotation.PreDestroy;
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import jakarta.annotation.PreDestroy;
 
 @Component
 public class HttpClientUtil {

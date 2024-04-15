@@ -122,7 +122,7 @@ export class QuestionAndAnswersComponent implements OnInit, OnDestroy {
       minScore: new FormControl(70, Validators.required),
       temperature: new FormControl(0.7, Validators.required),
       topP: new FormControl(0.5, Validators.required),
-      maxOutputTokens: new FormControl(4000, Validators.required),
+      maxTokens: new FormControl(2000, Validators.required),
       searchWeb: new FormControl(false),
       formatAnswer: new FormControl(false),
       rerankAnswers: new FormControl(false),
@@ -254,7 +254,7 @@ export class QuestionAndAnswersComponent implements OnInit, OnDestroy {
       allDocs: this.queryForm.get(['allDocs'])!.value,
       formatResponse: this.queryForm.get(['formatAnswer'])!.value,
       temperature: this.queryForm.get(['temperature'])!.value,
-      maxOutputTokens: this.queryForm.get(['maxOutputTokens'])!.value,
+      maxTokens: this.queryForm.get(['maxTokens'])!.value,
       topP: this.queryForm.get(['topP'])!.value,
       maxResults: this.queryForm.get(['maxResults'])!.value,
       minScore: (this.queryForm.get(['minScore'])!.value) / 100,
@@ -313,7 +313,7 @@ export class QuestionAndAnswersComponent implements OnInit, OnDestroy {
 
       // TODO Include EmbeddingModel cost
       const param = new HttpParams()
-        .set('maxOutputTokens', this.queryForm.get('maxOutputTokens')?.value)
+        .set('maxTokens', this.queryForm.get('maxTokens')?.value)
         .set('modelId', this.selectedLanguageModel?.id);
 
       this.contentService.getAnalysisCost(param).subscribe({

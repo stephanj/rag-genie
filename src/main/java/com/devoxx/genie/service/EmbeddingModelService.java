@@ -3,7 +3,6 @@ package com.devoxx.genie.service;
 import com.devoxx.genie.domain.EmbeddingModelReference;
 import com.devoxx.genie.domain.enumeration.LanguageModelType;
 import com.devoxx.genie.repository.EmbeddingModelReferenceRepository;
-import com.devoxx.genie.service.dto.DocumentDTO;
 import com.devoxx.genie.service.dto.EmbeddingModelReferenceDTO;
 import com.devoxx.genie.service.mapper.EmbeddingModelMapper;
 import dev.langchain4j.model.cohere.CohereEmbeddingModel;

@@ -1,7 +1,6 @@
 package com.devoxx.genie.service;
 
 import com.devoxx.genie.service.dto.EvaluationDTO;
-import com.devoxx.genie.service.dto.ResponseModel;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

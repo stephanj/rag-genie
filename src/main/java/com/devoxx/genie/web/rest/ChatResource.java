@@ -1,6 +1,5 @@
 package com.devoxx.genie.web.rest;
 
-import com.devoxx.genie.security.AuthoritiesConstants;
 import com.devoxx.genie.service.dto.ChatDTO;
 import com.devoxx.genie.service.entity.ChatService;
 import com.devoxx.genie.web.rest.errors.BadRequestAlertException;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 

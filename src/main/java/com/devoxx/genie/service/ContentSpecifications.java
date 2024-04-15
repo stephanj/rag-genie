@@ -1,8 +1,9 @@
 package com.devoxx.genie.service;
 
 import com.devoxx.genie.domain.Content;
-import jakarta.persistence.criteria.Path;
 import org.springframework.data.jpa.domain.Specification;
+
+import jakarta.persistence.criteria.Path;
 
 public class ContentSpecifications {
 

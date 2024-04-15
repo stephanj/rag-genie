@@ -1,15 +1,9 @@
 package com.devoxx.genie.web.rest;
 
-import com.devoxx.genie.service.dto.DocumentDTO;
-import com.devoxx.genie.service.dto.EmbeddingModelReferenceDTO;
-import com.devoxx.genie.service.dto.EvaluationDTO;
-import com.devoxx.genie.service.dto.LanguageModelDTO;
 import com.devoxx.genie.web.GenieWebTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;

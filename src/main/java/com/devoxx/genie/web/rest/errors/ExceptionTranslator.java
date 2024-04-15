@@ -1,9 +1,6 @@
 package com.devoxx.genie.web.rest.errors;
 
 import com.devoxx.genie.web.rest.util.HeaderUtil;
-import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -22,6 +19,9 @@ import org.zalando.problem.violations.ConstraintViolationProblem;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Controller advice to translate the server side exceptions to client-friendly json structures.

@@ -99,12 +99,10 @@ tasks:
     desc: "🏃 Start Genie"
     # Make sure these variables are set before running
     requires:
-      vars: [ FIREBASE_CREDENTIALS, OPENAI_API_KEY, APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE ]
+      vars: [ ]
     preconditions:
       - sh: 'test -f .env'
         msg: "You must create a .env file with the required environment variables"
-      - sh: 'test -f {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}}'
-        msg: "You must create a {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}} file with the required Firebase secrets file"
     cmds:
       - cmd: task genie:frontend:sync &
       - task: genie:backend:start
@@ -121,12 +119,10 @@ tasks:
     desc: "🏃 Start Genie Spring Boot backend"
     # Make sure these variables are set before running
     requires:
-      vars: [ FIREBASE_CREDENTIALS, OPENAI_API_KEY, APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE ]
+      vars: [ ]
     preconditions:
       - sh: 'test -f .env'
         msg: "You must create a .env file with the required environment variables"
-      - sh: 'test -f {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}}'
-        msg: "You must create a {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}} file with the required Firebase secrets file"
     deps:
       - db:start
       - java:is-installed
@@ -147,12 +143,10 @@ tasks:
       POSTGRESQL_ADDON_PORT: "5432"
     # Make sure these variables are set before running
     requires:
-      vars: [ FIREBASE_CREDENTIALS, OPENAI_API_KEY, APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE ]
+      vars: [ ]
     preconditions:
       - sh: 'test -f .env'
         msg: "You must create a .env file with the required environment variables"
-      - sh: 'test -f {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}}'
-        msg: "You must create a {{.APPLICATION_FIREBASE_SDK_CREDENTIALS_FILE}} file with the required Firebase secrets file"
     deps:
       - db:start
       - java:is-installed

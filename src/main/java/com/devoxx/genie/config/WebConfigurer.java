@@ -2,9 +2,6 @@ package com.devoxx.genie.config;
 
 import com.devoxx.genie.config.filter.CachingHttpHeadersFilter;
 import io.github.jhipster.config.JHipsterConstants;
-import jakarta.servlet.DispatcherType;
-import jakarta.servlet.FilterRegistration;
-import jakarta.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.server.MimeMappings;
@@ -27,6 +24,9 @@ import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.ServletContext;
 
 import static java.net.URLDecoder.decode;
 

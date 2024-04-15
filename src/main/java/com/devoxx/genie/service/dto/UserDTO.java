@@ -4,16 +4,16 @@ import com.devoxx.genie.config.Constants;
 import com.devoxx.genie.domain.Authority;
 import com.devoxx.genie.domain.User;
 import com.devoxx.genie.security.AuthProvider;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 /**
  * A DTO representing a user, with his authorities.
