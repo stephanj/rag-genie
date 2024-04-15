@@ -98,7 +98,7 @@
     <changeSet id="20242003" author="stephan">
         <preConditions onFail="CONTINUE">
             <not>
-                <tableExists tableName="fk_evaluation_result_embedding_model" />
+                <foreignKeyConstraintExists foreignKeyName="fk_evaluation_result_embedding_model"/>
             </not>
         </preConditions>
 
