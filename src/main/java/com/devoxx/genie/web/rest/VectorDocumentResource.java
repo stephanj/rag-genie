@@ -220,6 +220,9 @@ public class VectorDocumentResource {
 
         List<DocumentDTO> foundDocuments = documentService.filterDocumentsByQuery(user.getId(), dimension, query);
 
+        foundDocuments.forEach(contentService::addContentInfo);
+        documentService.addEmbeddingInfo(foundDocuments);
+
         HttpHeaders headers = new HttpHeaders();
         headers.add(TOTAL_COUNT, Long.toString(foundDocuments.size()));
 

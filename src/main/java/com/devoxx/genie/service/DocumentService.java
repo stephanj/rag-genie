@@ -248,7 +248,7 @@ public class DocumentService {
 
     }
 
-    private void addEmbeddingInfo(List<DocumentDTO> documents) {
+    public void addEmbeddingInfo(List<DocumentDTO> documents) {
         documents.forEach(document -> {
             String metadata = document.getMetadata();
             JsonObject jsonObject = JsonParser.parseString(metadata).getAsJsonObject();

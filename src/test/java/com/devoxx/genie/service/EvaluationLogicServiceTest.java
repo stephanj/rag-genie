@@ -12,7 +12,7 @@ class EvaluationLogicServiceTest {
     @Test
     void test_keywords_100_Match() {
         EvaluationLogicService evaluationLogicService =
-            new EvaluationLogicService(null, null, null, null, null);
+            new EvaluationLogicService(null, null, null, null, null, null);
 
         var evaluationDTO = new EvaluationDTO();
 
@@ -36,7 +36,7 @@ class EvaluationLogicServiceTest {
     @Test
     void test_keyword_88_Match() {
         EvaluationLogicService evaluationLogicService =
-            new EvaluationLogicService(null, null, null, null, null);
+            new EvaluationLogicService(null, null, null, null, null, null);
 
         var evaluationDTO = new EvaluationDTO();
 

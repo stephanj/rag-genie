@@ -9,6 +9,7 @@ import lombok.Setter;
 public class ChatModelDTO {
     @Setter
     private Long userId;
+    @Setter
     private String question;
     @Builder.Default private Boolean allDocs = false;
     @Builder.Default private Double temperature = 0.7;
@@ -21,6 +22,7 @@ public class ChatModelDTO {
     @Builder.Default private boolean rerank = false;
     @Builder.Default private boolean searchWeb = false;
     @Builder.Default private boolean formatResponse = false;
+    @Setter
     private String prompt;
     private Long embeddingModelRefId;
     private String embeddingModelRefName;

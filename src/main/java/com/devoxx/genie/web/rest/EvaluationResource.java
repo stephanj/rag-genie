@@ -145,10 +145,14 @@ public class EvaluationResource {
      */
     @PostMapping(path = "/evaluation/start", consumes = MediaType.ALL_VALUE)
     public ResponseEntity<Void> startEvaluations(@RequestParam String models,
-                                                 @RequestParam ChatModelDTO chatModelDTO,
+                                                 @RequestParam Double temperature,
+                                                 @RequestParam Long embedId,
+                                                 @RequestParam(defaultValue = "0.7") Double minScore,
+                                                 @RequestParam(defaultValue = "4000") Integer maxOutputTokens,
+                                                 @RequestParam(defaultValue = "3") Integer size,
                                                  @RequestParam() List<Long> evaluations) {
 
-        LOGGER.debug("Start valuation process: {}", chatModelDTO);
+        LOGGER.debug("Start valuation process: {}", models);
 
         List<EvaluationDTO> evalEntries = evaluationService.findAllById(evaluations);
 
@@ -156,13 +160,18 @@ public class EvaluationResource {
             return ResponseEntity.badRequest().build();
         }
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException("User not found", "USER", "usernotfound"));
-        chatModelDTO.setUserId(user.getId());
+        ChatModelDTO chatModelDTO = ChatModelDTO.builder()
+            .temperature(temperature)
+            .maxTokens(maxOutputTokens)
+            .embeddingModelRefId(embedId)
+            .minScore(minScore)
+            .maxResults(size)
+            .embeddingModelRefId(embedId)
+            .build();
 
-        Arrays.stream(models.split(",")).forEach(modelId ->
+        Arrays.stream(models.split(",")).forEach(languageModelId ->
             evalEntries.forEach(evaluationItem ->
-                evaluationLogicService.evaluate(chatModelDTO, evaluationItem)));
+                evaluationLogicService.evaluate(languageModelId, chatModelDTO, evaluationItem)));
 
         return ResponseEntity.ok().build();
     }

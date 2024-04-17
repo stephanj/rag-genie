@@ -22,28 +22,36 @@ public class EvaluationLogicService {
     private final SimilarityService similarityService;
     private final EmbeddingModelService embeddingModelService;
     private final ReRankService reRankService;
+    private final LanguageModelService languageModelService;
 
     public EvaluationLogicService(EvaluationResultService evaluationEntryService,
                                   QuestionService questionService,
                                   SimilarityService similarityService,
                                   EmbeddingModelService embeddingModelService,
-                                  ReRankService reRankService) {
+                                  ReRankService reRankService,
+                                  LanguageModelService languageModelService) {
         this.evaluationEntryService = evaluationEntryService;
         this.questionService = questionService;
         this.similarityService = similarityService;
         this.embeddingModelService = embeddingModelService;
         this.reRankService = reRankService;
+        this.languageModelService = languageModelService;
     }
 
     /**
      * Evaluate the question
-     *
+     * @param languageModelId  the language model ID
      * @param chatModelDTO     the chat model DTO
      * @param evaluationDTO    the evaluation DTO
      */
-    public void evaluate(ChatModelDTO chatModelDTO,
+    public void evaluate(String languageModelId,
+                         ChatModelDTO chatModelDTO,
                          EvaluationDTO evaluationDTO) {
         LOGGER.debug("Evaluating question: {}", evaluationDTO);
+
+        chatModelDTO.setQuestion(evaluationDTO.getQuestion().trim());
+        chatModelDTO.setLanguageModelDTO(languageModelService.findById(Long.parseLong(languageModelId)));
+        chatModelDTO.setPrompt(evaluationDTO.getQuestion().trim());
 
         List<DocumentDTO> relevantDocuments = similarityService.findSimilarDocumentsBasedOnQuery(chatModelDTO);
 
