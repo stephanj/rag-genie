@@ -122,6 +122,15 @@ You can also use `.env` to override the default values from `.env.default`.
 
 You can pass to the application any configuration parameter as described in [Spring Boot documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.external-config). 
 
+One mandatory env variable is GENIE_SECURITY_KEY_SECRET which is used to encrypt the API keys into the database.
+
+The length of this key should be 32 characters (for 256-bit key) to work correctly with the AES encryption algorithm.
+
+The following command will create a 32 characters keys
+
+```
+openssl rand -base64 32
+``` 
 
 ### Start Genie
 
