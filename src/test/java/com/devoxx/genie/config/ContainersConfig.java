@@ -13,7 +13,7 @@ public class ContainersConfig {
     @ServiceConnection
     @RestartScope
     protected PostgreSQLContainer<?> postgreSQLContainer() {
-        var dockerImage = DockerImageName.parse("ankane/pgvector:v0.5.1")
+        var dockerImage = DockerImageName.parse("pgvector/pgvector:pg16")
             .asCompatibleSubstituteFor("postgres");
 
         var postgresContainer = new PostgreSQLContainer<>(dockerImage).withInitScript("init.sql");
