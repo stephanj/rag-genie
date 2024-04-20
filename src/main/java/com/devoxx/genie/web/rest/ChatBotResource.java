@@ -71,7 +71,7 @@ public class ChatBotResource {
         User user = userService.getAdminUser()
             .orElseThrow(() ->
                 new BadRequestAlertException("USER_NOT_FOUND", "USER", "USER_NOT_FOUND_CODE"));
-
+        chatModelDTO.setUserId(user.getId());
 
         EmbeddingModel embeddingModel = embeddingModelService.getEmbeddingModelByUserIdAndRefId(user.getId(), chatModelDTO.getEmbeddingModelRefId())
             .orElseThrow(() -> new IllegalArgumentException("Embedding model not found"));
