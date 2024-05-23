@@ -1,4 +1,4 @@
-import {Component, OnInit, ElementRef, ViewChild, OnDestroy} from '@angular/core';
+import {Component, OnInit, ElementRef, ViewChild, OnDestroy, Renderer2} from '@angular/core';
 import { VectorVisualizationService } from './vector-visualization.service';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls';
@@ -40,6 +40,11 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
     new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10_000);
 
   private renderer!: THREE.WebGLRenderer;
+  private raycaster!: THREE.Raycaster;
+  private mouse!: THREE.Vector2;
+  private label!: HTMLElement;
+  private spheres: { sphere: THREE.Mesh, label: string }[] = [];
+
   private scene = new THREE.Scene();
 
   private colorIndex = 0;
@@ -50,7 +55,8 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
 
   constructor(protected vectorVisualizationService: VectorVisualizationService,
               protected contentListService: ContentListService,
-              protected activatedRoute: ActivatedRoute) {
+              protected activatedRoute: ActivatedRoute,
+              protected renderer2: Renderer2) {
   }
 
   ngOnInit(): void {
@@ -121,17 +127,27 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     // 0x121212 is a dark grey color
     this.renderer.setClearColor(0x121212, 1.0);
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+
+    this.label = this.renderer2.createElement('div');
+    this.label.style.position = 'absolute';
+    this.label.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+    this.label.style.padding = '4px';
+    this.label.style.display = 'none';
+    document.body.appendChild(this.label);
 
     this.containerRef.nativeElement.appendChild(this.renderer.domElement);
+    this.renderer.domElement.addEventListener('mousemove', this.onMouseMove.bind(this));
   }
 
   private addPoints(typedArray: Float32Array, color: ColorRepresentation): void {
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(typedArray, 3));
-    const material = new THREE.PointsMaterial({ color: color, size: 0.07 });
-    const points = new THREE.Points(geometry, material);
-    points.position.x -= 2; // 'amount' is how far you want to move the points to the left
-    this.scene.add(points);
+    const geometry = new THREE.SphereGeometry(0.1);
+    const material = new THREE.MeshBasicMaterial({ color: color});
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.position.set(typedArray[0], typedArray[1], 0)
+    this.spheres.push( {sphere: sphere, label: "dummy label"});
+    this.scene.add(sphere);
   }
 
   processVectorData(data: number[][]): {
@@ -200,5 +216,34 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
     this.colorIndex = (this.colorIndex + 1) % myColors.length;
 
     return color;
+  }
+
+  onMouseMove(event: MouseEvent) {
+    event.preventDefault();
+
+    // Calculate mouse position in normalized coordinates
+    this.mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
+    this.mouse.y = -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+    
+    // Update the raycaster with the camera and mouse position
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    // Calculate objects intersecting the picking ray
+    const intersects = this.raycaster.intersectObjects(this.spheres.map(({ sphere }) => sphere));
+
+    if (intersects.length > 0) {
+      const intersect = intersects[0];
+      const sphereData = this.spheres.find(({ sphere }) => sphere === intersect.object);
+
+      if(sphereData) {
+        const { sphere, label } = sphereData
+        this.label.innerHTML = `Label: ${label}, x: ${sphere.position.x.toFixed(2)}, y: ${sphere.position.y.toFixed(2)}`;
+        this.label.style.left = `${event.clientX + 10}px`;
+        this.label.style.top = `${event.clientY + 10}px`;
+        this.label.style.display = 'block';
+      }
+    } else {
+      this.label.style.display = 'none';
+    }
   }
 }
