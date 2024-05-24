@@ -15,6 +15,7 @@ import {DialogModule} from 'primeng/dialog';
 import {NgStyle} from '@angular/common';
 import {ColorRepresentation} from 'three/src/math/Color';
 import {ActivatedRoute} from '@angular/router';
+import { resolveTxt } from 'dns';
 
 @Component({
   selector: 'genie-vector-visualization',
@@ -36,10 +37,8 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
 
   private subscriptions = new Subscription();
 
-  private camera =
-    new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10_000);
-
   private renderer!: THREE.WebGLRenderer;
+  private camera!: THREE.PerspectiveCamera;
   private raycaster!: THREE.Raycaster;
   private mouse!: THREE.Vector2;
   private label!: HTMLElement;
@@ -126,11 +125,9 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
   }
 
   private initThreeJS(): void {
-    this.camera.position.set(0, 0, 5);
-    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
-
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10_000);
     // 0x121212 is a dark grey color
     this.renderer.setClearColor(0x121212, 1.0);
     this.raycaster = new THREE.Raycaster();
@@ -138,7 +135,8 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
 
     this.label = this.renderer2.createElement('div');
     this.label.style.position = 'absolute';
-    this.label.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+    this.label.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+    this.label.style.color = 'rgba(0, 0, 0, 1)';
     this.label.style.padding = '4px';
     this.label.style.display = 'none';
     document.body.appendChild(this.label);
@@ -153,8 +151,9 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
         const geometry = new THREE.SphereGeometry(0.5);
         const material = new THREE.MeshBasicMaterial({ color: color});
         const sphere = new THREE.Mesh(geometry, material);
-        geometry.computeBoundingSphere()
-        sphere.position.set(point.x, point.y, point.z);
+        sphere.position.set(point.x, -point.y, point.z);
+        geometry.computeBoundingSphere();
+        sphere.updateMatrixWorld();
         this.spheres.push( {sphere: sphere, label: `dummy label ${index}`});
         this.scene.add(sphere);
     });
@@ -218,14 +217,16 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     // Calculate mouse position in normalized coordinates
-    this.mouse.x = (event.clientX / this.renderer.domElement.clientWidth) * 2 - 1;
-    this.mouse.y = -(event.clientY / this.renderer.domElement.clientHeight) * 2 + 1;
+    var rect = this.renderer.domElement.getBoundingClientRect();
+    var dx = event.clientX - rect.x
+    var dy = event.clientY - rect.y
+    this.mouse.x = (dx / rect.width) * 2 - 1; 
+    this.mouse.y = -(dy / rect.height) * 2 + 1;
     
     // Update the raycaster with the camera and mouse position
     this.raycaster.setFromCamera(this.mouse, this.camera);
     // Calculate objects intersecting the picking ray
     const intersects = this.raycaster.intersectObjects(this.scene.children);
-    //this.scene.add(new THREE.ArrowHelper(this.raycaster.ray.direction, this.raycaster.ray.origin, 300, 0xff0000) );
 
     if (intersects.length > 0) {
       const intersect = intersects[0];
@@ -241,8 +242,5 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
     } else {
       this.label.style.display = 'none';
     }
-
-    console.log(`Mouse position: x=${this.mouse.x}, y=${this.mouse.y}`);
-    console.log(`Intersections: ${intersects.length}`);
   }
 }
