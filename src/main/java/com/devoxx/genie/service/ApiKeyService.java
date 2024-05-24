@@ -9,6 +9,7 @@ import com.devoxx.genie.service.dto.UserAPIKeyDTO;
 import com.devoxx.genie.service.mapper.UserApiKeyMapper;
 import com.devoxx.genie.service.security.EncryptionException;
 import com.devoxx.genie.service.security.SecurityKeyService;
+import com.devoxx.genie.web.rest.errors.EncryptingAesKeyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -54,8 +55,8 @@ public class ApiKeyService {
         try {
             entity.setApiKey(securityKeyService.encrypt(entity.getApiKey()));
         } catch (EncryptionException e) {
-            LOGGER.error("Error while encrypting the API Key", e);
-            return null;
+            LOGGER.error("Error while encrypting the AES Key", e);
+            throw new EncryptingAesKeyException();
         }
 
         return userApiKeyRepository.save(entity);

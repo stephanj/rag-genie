@@ -79,15 +79,19 @@ export class ApiKeysComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.apiKeyService
         .create(params)
-        .subscribe(() => {
+        .subscribe({
+          next : () => {
           this.saving = false;
           this.showDialog = false;
           this.messageService.add({severity: 'success', summary: 'Success', detail: 'Encrypted & saved'});
           this.loadAll();
-        }, (res) => {
+          },
+          
+        error :(err) => {
           this.showDialog = false;
           this.saving = false;
-          this.messageService.add({severity: 'error', summary: 'Error', detail: res.error.detail});
+          this.messageService.add({severity: 'error', summary: 'Error', detail: err.error.message});
+          }
         }
     ));
   }
