@@ -15,7 +15,6 @@ import {DialogModule} from 'primeng/dialog';
 import {NgStyle} from '@angular/common';
 import {ColorRepresentation} from 'three/src/math/Color';
 import {ActivatedRoute} from '@angular/router';
-import { resolveTxt } from 'dns';
 
 @Component({
   selector: 'genie-vector-visualization',
@@ -148,7 +147,7 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
   private addPoints(points: {x: number, y: number, z: number}[], color: ColorRepresentation): void {
 
     points.forEach((point, index) => {
-        const geometry = new THREE.SphereGeometry(0.5);
+        const geometry = new THREE.SphereGeometry(0.07);
         const material = new THREE.MeshBasicMaterial({ color: color});
         const sphere = new THREE.Mesh(geometry, material);
         sphere.position.set(point.x, -point.y, point.z);
@@ -217,13 +216,13 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     // Calculate mouse position in normalized coordinates
-    var rect = this.renderer.domElement.getBoundingClientRect();
-    var dx = event.clientX - rect.x
-    var dy = event.clientY - rect.y
-    this.mouse.x = (dx / rect.width) * 2 - 1; 
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    const dx = event.clientX - rect.x
+    const dy = event.clientY - rect.y
+    this.mouse.x = (dx / rect.width) * 2 - 1;
     this.mouse.y = -(dy / rect.height) * 2 + 1;
-    
-    // Update the raycaster with the camera and mouse position
+
+    // Update the ray caster with the camera and mouse position
     this.raycaster.setFromCamera(this.mouse, this.camera);
     // Calculate objects intersecting the picking ray
     const intersects = this.raycaster.intersectObjects(this.scene.children);
