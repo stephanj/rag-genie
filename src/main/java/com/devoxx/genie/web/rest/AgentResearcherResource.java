@@ -53,15 +53,21 @@ public class AgentResearcherResource {
 
     /**
      * POST /agent/researcher: Agent researcher researches a topic.
-     * @link <a href="https://github.com/mshumer/ai-researcher">https://github.com/mshumer/ai-researcher</a>
+     *
      * @param chatModelDTO the chat model DTO
      * @return the ResponseEntity with status 200 (OK) and with body the new content
+     * @link <a href="https://github.com/mshumer/ai-researcher">https://github.com/mshumer/ai-researcher</a>
      */
     @PostMapping("/agent-researcher")
     public ResponseEntity<String> researchTopic(@RequestBody ChatModelDTO chatModelDTO) {
         LOGGER.debug("Adding text content: {}", chatModelDTO);
-
+        User user = userService.getAdminUser()
+            .orElseThrow(() ->
+                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
         // Set selected language model
+
+        chatModelDTO.setUserId(user.getId());
+
         setLanguageModel(chatModelDTO);
 
         // Create a chat model
@@ -70,11 +76,6 @@ public class AgentResearcherResource {
         // Use the selected language model by user to create a chat model
         ResearchAgent researchAgent = AiServices.create(ResearchAgent.class, chatModel);
         List<String> searchQueries = researchAgent.getSearchQueries(chatModelDTO.getQuestion());
-
-        // Get user
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
 
         LOGGER.debug("Search queries: {}", searchQueries);
         List<SearchResultDTO> searchResults = getSearchResultDTOS(searchQueries, user);
@@ -114,13 +115,15 @@ public class AgentResearcherResource {
         contentDTO.setSource(searchResult.getLink());
         contentDTO.setContentType(com.devoxx.genie.service.dto.enumeration.ContentType.HTML);
         contentDTO.setName(searchResult.getSnippet());
+        try{
+            contentDTOS.add(contentService.save(contentDTO));
 
-        contentDTOS.add(contentService.save(contentDTO));
+        }catch (Exception ignored){}
     }
 
     private @NotNull List<SearchResultDTO> getSearchResultDTOS(List<String> searchQueries, User user) {
         List<SearchResultDTO> searchResults = new ArrayList<>();
-        searchQueries.forEach(query -> {
+        searchQueries.stream().filter((str) -> !str.trim().isEmpty()).forEach(query -> {
             searchResults.addAll(webSearchService.retrieve(user.getId(), query, 3));
             LOGGER.debug("Retrieved documents: {}", searchResults);
         });
