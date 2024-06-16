@@ -3,4 +3,5 @@ export class SplitterInfo {
   chunkSize!: number;
   chunkOverlap!: number;
   strategy!: string;
+  value!: string;
 }

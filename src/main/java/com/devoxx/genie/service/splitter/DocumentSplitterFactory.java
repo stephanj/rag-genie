@@ -13,11 +13,13 @@ public class DocumentSplitterFactory {
      * Get the splitter based on the strategy
      *
      * @param strategy     the splitter strategy
+     * @param value        the regular expression value
      * @param chunkSize    the chunk size
      * @param chunkOverlap the chunk overlap
      * @return the document splitter
      */
     public static DocumentSplitter getSplitter(SplitterStrategy strategy,
+                                               String value,
                                                int chunkSize,
                                                int chunkOverlap) {
         return switch (strategy) {
@@ -28,6 +30,7 @@ public class DocumentSplitterFactory {
             case PARAGRAPH -> new DocumentByParagraphSplitter(chunkSize, chunkOverlap);
             case RECURSIVE -> DocumentSplitters.recursive(chunkSize, chunkOverlap);
             case JSON -> new DocumentByJSONSplitter();
+            case REGEX -> new DocumentByRegexSplitter(value, "|", chunkSize, chunkOverlap, DocumentSplitters.recursive(chunkSize, chunkOverlap));
             default -> throw new IllegalArgumentException("Invalid strategy");
         };
     }

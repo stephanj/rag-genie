@@ -27,19 +27,21 @@ public class SplitterService {
      *
      * @param strategy     the splitter strategy
      * @param contentId    the content id
+     * @param value        the value
      * @param chunkSize    the text size
      * @param chunkOverlap the text overlap
      * @return the list of chunks
      */
     public List<String> split(SplitterStrategy strategy,
                               String contentId,
+                              String value,
                               int chunkSize,
                               int chunkOverlap) {
 
         ContentDTO contentDTO = contentService.findById(Long.parseLong(contentId));
         LOGGER.debug("Splitting content: {}", contentDTO.getValue());
 
-        DocumentSplitter splitter = DocumentSplitterFactory.getSplitter(strategy, chunkSize, chunkOverlap);
+        DocumentSplitter splitter = DocumentSplitterFactory.getSplitter(strategy, value, chunkSize, chunkOverlap);
         List<TextSegment> split = splitter.split(new Document(contentDTO.getValue()));
 
         return List.of(split.stream().map(TextSegment::text).toArray(String[]::new));

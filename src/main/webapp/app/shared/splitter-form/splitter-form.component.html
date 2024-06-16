@@ -19,6 +19,17 @@
                 </span>
         </div>
 
+        @if (showRegValue) {
+            <div class="field col-12">
+                <span class="p-float-label">
+                    <input pInputText
+                           id="regValue"
+                           formControlName="regValue"/>
+                    <label for="regValue">Regular expression value</label>
+                </span>
+            </div>
+        }
+
         @if (showChunkSizing) {
             <div class="field col-6">
                     <span class="p-float-label">

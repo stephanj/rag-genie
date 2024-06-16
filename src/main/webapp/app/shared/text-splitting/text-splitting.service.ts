@@ -17,7 +17,8 @@ export class TextSplittingService {
       .set('contentIds', splitterInfo.contentIds.join(','))
       .set('chunkSize', splitterInfo.chunkSize)
       .set('chunkOverlap', splitterInfo.chunkOverlap)
-      .set('strategy', splitterInfo.strategy);
+      .set('strategy', splitterInfo.strategy)
+      .set('value', splitterInfo.value);
 
     return this.http.get<string[]>('/api/splitter', { params, observe: 'response'});
   }
