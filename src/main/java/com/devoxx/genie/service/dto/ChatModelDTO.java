@@ -1,11 +1,11 @@
 package com.devoxx.genie.service.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ChatModelDTO {
     @Setter
     private Long userId;
