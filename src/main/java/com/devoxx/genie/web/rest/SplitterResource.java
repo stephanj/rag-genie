@@ -25,10 +25,20 @@ public class SplitterResource {
         this.splitterService = splitterService;
     }
 
+    /**
+     * Split the text
+     * @param strategy  the splitter strategy
+     * @param contentIds the content ids
+     * @param value the value
+     * @param chunkSize the chunk size
+     * @param chunkOverlap the chunk overlap
+     * @return the list of chunks
+     */
     @GetMapping("/splitter")
     public ResponseEntity<List<String>> splitText(
+        @RequestParam String contentIds,
         @RequestParam(defaultValue = "RECURSIVE") SplitterStrategy strategy,
-        @RequestParam() String contentIds,
+        @RequestParam(required = false) String value,
         @RequestParam(required = false, defaultValue = "450") int chunkSize,
         @RequestParam(required = false, defaultValue = "25") int chunkOverlap) {
 
@@ -38,7 +48,7 @@ public class SplitterResource {
 
         Arrays.stream(contentIds.split(","))
             .forEach(contentId -> {
-                List<String> chunks = splitterService.split(strategy, contentId, chunkSize, chunkOverlap);
+                List<String> chunks = splitterService.split(strategy, contentId, value, chunkSize, chunkOverlap);
                 result.addAll(chunks);
             });
 

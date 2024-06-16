@@ -43,6 +43,7 @@ export class SplitterFormComponent {
   splitterInfo!: SplitterInfo;
 
   showChunkSizing = false;
+  showRegValue = false;
 
   splitterOptions = [
     { label: 'Character', value: 'CHARACTER', description: 'Split text into characters'},
@@ -52,10 +53,9 @@ export class SplitterFormComponent {
     { label: 'Paragraph', value: 'PARAGRAPH', description: 'Split text into paragraphs'},
     { label: 'Recursive', value: 'RECURSIVE', description: 'Split text recursively into words, sentences, lines and paragraphs'},
     { label: 'JSON', value: 'JSON', description: 'Split text by JSON fields'},
-    { label: 'TODO: Regex', value: 'REGEX', description: 'Split text using a regular expression'},
+    { label: 'Regex', value: 'REGEX', description: 'Split text using a regular expression'},
+    { label: 'TODO: getSeparatorsForLanguage(xxx)', value: 'CODE', description: 'Split code by language for example Java'},
     { label: 'TODO: Semantic', value: 'SEMANTIC', description: 'Split text using semantic analysis'},
-    { label: 'TODO: Code', value: 'CODE', description: 'Split code like Java programs etc.'},
-    { label: 'TODO: Markdown', value: 'MARKDOWN', description: 'Split Markdown text'}
   ];
 
   constructor(private formBuilder: FormBuilder,
@@ -63,7 +63,8 @@ export class SplitterFormComponent {
     this.splitterForm = this.formBuilder.group({
       strategy: new FormControl('', Validators.required),
       chunkSize: new FormControl(this.chunkSize, [Validators.min(1)]),
-      chunkOverlap: new FormControl(this.chunkOverlap, [Validators.min(0)])
+      chunkOverlap: new FormControl(this.chunkOverlap, [Validators.min(0)]),
+      regValue: new FormControl('')
     });
   }
 
@@ -74,7 +75,10 @@ export class SplitterFormComponent {
       $event.value === 'SENTENCE' ||
       $event.value === 'PARAGRAPH' ||
       $event.value === 'LINE' ||
-      $event.value === 'RECURSIVE'
+      $event.value === 'RECURSIVE' ||
+      $event.value === 'REGEX';
+
+    this.showRegValue = $event.value === 'REGEX';
   }
 
   handleSplitText(): void {
@@ -92,19 +96,22 @@ export class SplitterFormComponent {
     this.splitterInfo.strategy = this.splitterForm.get('strategy')?.value;
     this.splitterInfo.chunkSize = this.splitterForm.get('chunkSize')?.value;
     this.splitterInfo.chunkOverlap = this.splitterForm.get('chunkOverlap')?.value;
+    this.splitterInfo.value = this.splitterForm.get('regValue')?.value;
+
+    alert('Splitting text with the following parameters: ' + JSON.stringify(this.splitterInfo));
 
     if (!this.contentSelection) {
       this.messageService.add({severity: 'error',
-                               summary: 'First select a document',
-                               sticky: true,
-                               detail: 'No content selected'});
+        summary: 'First select a document',
+        sticky: true,
+        detail: 'No content selected'});
     }
 
     if (this.splitterInfo.chunkOverlap > this.splitterInfo.chunkSize) {
       this.messageService.add({severity: 'error',
-                               summary: 'Error in text sizing',
-                               sticky: true,
-                               detail: 'Chunk overlap cannot be greater than text size'});
+        summary: 'Error in text sizing',
+        sticky: true,
+        detail: 'Chunk overlap cannot be greater than text size'});
     }
 
     this.splitText.next(this.splitterInfo);
