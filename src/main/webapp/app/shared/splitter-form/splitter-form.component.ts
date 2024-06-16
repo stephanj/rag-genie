@@ -98,8 +98,6 @@ export class SplitterFormComponent {
     this.splitterInfo.chunkOverlap = this.splitterForm.get('chunkOverlap')?.value;
     this.splitterInfo.value = this.splitterForm.get('regValue')?.value;
 
-    alert('Splitting text with the following parameters: ' + JSON.stringify(this.splitterInfo));
-
     if (!this.contentSelection) {
       this.messageService.add({severity: 'error',
         summary: 'First select a document',
