@@ -1,12 +1,10 @@
 package com.devoxx.genie.web.rest;
 
-import com.devoxx.genie.domain.User;
 import com.devoxx.genie.service.ApiKeyService;
 import com.devoxx.genie.service.DocumentService;
 import com.devoxx.genie.service.EmbeddingModelService;
+import com.devoxx.genie.service.dto.DocumentWithEmbeddingDTO;
 import com.devoxx.genie.service.dto.EmbeddingModelReferenceDTO;
-import com.devoxx.genie.service.user.UserService;
-import com.devoxx.genie.web.rest.errors.BadRequestAlertException;
 import com.google.gson.JsonParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.devoxx.genie.web.rest.ContentResource.USER_NOT_FOUND;
-import static com.devoxx.genie.web.rest.ContentResource.USER_NOT_FOUND_CODE;
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
 import static com.devoxx.genie.web.rest.util.DimensionUtil.isInvalidDimension;
 
 @RestController
@@ -32,16 +29,13 @@ public class EmbeddingModelResource {
     private final DocumentService documentService;
     private final EmbeddingModelService embeddingModelService;
     private final ApiKeyService apiKeyService;
-    private final UserService userService;
 
     public EmbeddingModelResource(DocumentService documentService,
                                   EmbeddingModelService embeddingModelService,
-                                  ApiKeyService apiKeyService,
-                                  UserService userService) {
+                                  ApiKeyService apiKeyService) {
         this.documentService = documentService;
         this.embeddingModelService = embeddingModelService;
         this.apiKeyService = apiKeyService;
-        this.userService = userService;
     }
 
     /**
@@ -53,17 +47,13 @@ public class EmbeddingModelResource {
     public ResponseEntity<List<EmbeddingModelReferenceDTO>> getAllEmbeddingModels() {
         LOGGER.debug("Get all embeddings");
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
         List<EmbeddingModelReferenceDTO> embeddingModels = embeddingModelService.findAll();
 
         // Filter the commercial embeddings for which there are no user keys
         List<EmbeddingModelReferenceDTO> filteredList = new ArrayList<>();
         embeddingModels.forEach(embeddingModelDTO -> {
             if (embeddingModelDTO.getProvider().name().equals("EMBED") ||
-                apiKeyService.isLanguageModelKeyDefined(user.getId(), embeddingModelDTO.getProvider())) {
+                apiKeyService.isLanguageModelKeyDefined(HARD_CODED_USER_ID, embeddingModelDTO.getProvider())) {
                 filteredList.add(embeddingModelDTO);
             }
         });
@@ -80,10 +70,7 @@ public class EmbeddingModelResource {
     public ResponseEntity<List<EmbeddingModelReferenceDTO>> getUsedEmbeddingModels() {
         LOGGER.debug("Get used embedding models");
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
-        List<EmbeddingModelReferenceDTO> usedModels = documentService.getByUserIdAndDimension(user.getId())
+        List<EmbeddingModelReferenceDTO> usedModels = documentService.getByUserIdAndDimension(HARD_CODED_USER_ID)
             .stream()
             .map(documentDTO -> {
                 try {
@@ -108,29 +95,35 @@ public class EmbeddingModelResource {
      * @return the response entity
      */
     @GetMapping("/embeddings/{dimension}/{contentId}")
-    public ResponseEntity<float[][]> getAll(@PathVariable Integer dimension,
-                                            @PathVariable Long contentId) {
+    public ResponseEntity<List<DocumentWithEmbeddingDTO>> getAll(@PathVariable Integer dimension,
+                                                                 @PathVariable Long contentId) {
         LOGGER.debug("Get all embeddings for dimension {}", dimension);
 
         if (isInvalidDimension(dimension)) {
             return ResponseEntity.badRequest().build();
         }
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
+        List<DocumentWithEmbeddingDTO> allContentEmbeddingsForUserId =
+            documentService.findAllContentEmbeddingsForUserId(dimension, contentId, HARD_CODED_USER_ID);
 
-        float[][] allEmbeddingsForUserId =
-            documentService.findAllContentEmbeddingsForUserId(dimension, contentId, user.getId());
-
-        if (allEmbeddingsForUserId.length > 0) {
+        if (!allContentEmbeddingsForUserId.isEmpty()) {
             final Umap umap = new Umap();
             umap.setNumberComponents(3);         // number of dimensions in result
             umap.setNumberNearestNeighbours(15);
             umap.setThreads(1);                  // use > 1 to enable parallelism
+
+            final float[][] allEmbeddingsForUserId = allContentEmbeddingsForUserId
+                .stream()
+                .map(DocumentWithEmbeddingDTO::getEmbedding)
+                .toArray(float[][]::new);
+
             final float[][] result = umap.fitTransform(allEmbeddingsForUserId);
 
-            return ResponseEntity.ok(result);
+            for (int i = 0; i < allContentEmbeddingsForUserId.size(); i++) {
+                allContentEmbeddingsForUserId.get(i).setEmbedding(result[i]);
+            }
+
+            return ResponseEntity.ok(allContentEmbeddingsForUserId);
         } else {
             return ResponseEntity.notFound().build();
         }

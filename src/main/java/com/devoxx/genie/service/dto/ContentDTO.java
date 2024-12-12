@@ -2,6 +2,7 @@ package com.devoxx.genie.service.dto;
 
 import com.devoxx.genie.service.dto.enumeration.ContentType;
 import com.devoxx.genie.service.retriever.swagger.Field;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,6 +23,7 @@ public class ContentDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private Long userId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ")
     private ZonedDateTime createdOn;
     private ContentType contentType;
     private String name;

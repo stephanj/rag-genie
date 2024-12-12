@@ -19,6 +19,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
+
 @Service
 public class ApiKeyService {
 
@@ -53,7 +55,8 @@ public class ApiKeyService {
         entity.setKeyMask(prefix + "..." + suffix);
 
         try {
-            entity.setApiKey(securityKeyService.encrypt(entity.getApiKey()));
+            String encryptedKey = securityKeyService.encrypt(entity.getApiKey());
+            entity.setApiKey(encryptedKey);
         } catch (EncryptionException e) {
             LOGGER.error("Error while encrypting the AES Key", e);
             throw new EncryptingAesKeyException();
@@ -107,7 +110,7 @@ public class ApiKeyService {
     }
 
     public Optional<String> getApiKeyForUserIdAndLanguageModelType(ChatModelDTO chatModelDTO) {
-        return getApiKeyForUserIdAndLanguageModelType(chatModelDTO.getUserId(),
+        return getApiKeyForUserIdAndLanguageModelType(HARD_CODED_USER_ID,
                                                       chatModelDTO.getLanguageModelDTO().getModelType());
     }
 }

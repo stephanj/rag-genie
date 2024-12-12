@@ -198,3 +198,4 @@ htmlReport/**
 ######################
 src/main/webapp/**/*.css
 src/main/webapp/**/*.css.map
+/db-dumps/

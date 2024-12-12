@@ -21,6 +21,7 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
 import static com.devoxx.genie.web.rest.ContentResource.USER_NOT_FOUND_CODE;
 import static com.devoxx.genie.web.rest.VectorDocumentResource.USER_NOT_FOUND;
 
@@ -61,12 +62,9 @@ public class AgentResearcherResource {
     @PostMapping("/agent-researcher")
     public ResponseEntity<String> researchTopic(@RequestBody ChatModelDTO chatModelDTO) {
         LOGGER.debug("Adding text content: {}", chatModelDTO);
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-        // Set selected language model
 
-        chatModelDTO.setUserId(user.getId());
+        // Set selected language model
+        chatModelDTO.setUserId(HARD_CODED_USER_ID);
 
         setLanguageModel(chatModelDTO);
 
@@ -78,12 +76,12 @@ public class AgentResearcherResource {
         List<String> searchQueries = researchAgent.getSearchQueries(chatModelDTO.getQuestion());
 
         LOGGER.debug("Search queries: {}", searchQueries);
-        List<SearchResultDTO> searchResults = getSearchResultDTOS(searchQueries, user);
+        List<SearchResultDTO> searchResults = getSearchResultDTOS(searchQueries);
 
         List<ContentDTO> contentDTOS = new ArrayList<>();
         searchResults.forEach(searchResult -> {
             try {
-                storeSearchResults(searchResult, user, contentDTOS);
+                storeSearchResults(searchResult, contentDTOS);
             } catch (MalformedURLException | RuntimeException e) {
                 LOGGER.error("Error while retrieving content from URL: {}", searchResult.getLink(), e);
             }
@@ -99,18 +97,17 @@ public class AgentResearcherResource {
         return ResponseEntity.ok().body(report);
     }
 
-    private void setLanguageModel(ChatModelDTO chatModelDTO) {
+    private void setLanguageModel(@NotNull ChatModelDTO chatModelDTO) {
         LanguageModelDTO languageModelDTO = languageModelService.findById(chatModelDTO.getLanguageModelDTO().getId());
         chatModelDTO.setLanguageModelDTO(languageModelDTO);
     }
 
-    private void storeSearchResults(SearchResultDTO searchResult,
-                                    User user,
+    private void storeSearchResults(@NotNull SearchResultDTO searchResult,
                                     List<ContentDTO> contentDTOS) throws MalformedURLException {
         String contentFromUrl = contentImportService.getContentFromUrl(searchResult.getLink());
 
         ContentDTO contentDTO = new ContentDTO();
-        contentDTO.setUserId(user.getId());
+        contentDTO.setUserId(HARD_CODED_USER_ID);
         contentDTO.setValue(contentFromUrl);
         contentDTO.setSource(searchResult.getLink());
         contentDTO.setContentType(com.devoxx.genie.service.dto.enumeration.ContentType.HTML);
@@ -121,10 +118,10 @@ public class AgentResearcherResource {
         }catch (Exception ignored){}
     }
 
-    private @NotNull List<SearchResultDTO> getSearchResultDTOS(List<String> searchQueries, User user) {
+    private @NotNull List<SearchResultDTO> getSearchResultDTOS(@NotNull List<String> searchQueries) {
         List<SearchResultDTO> searchResults = new ArrayList<>();
         searchQueries.stream().filter((str) -> !str.trim().isEmpty()).forEach(query -> {
-            searchResults.addAll(webSearchService.retrieve(user.getId(), query, 3));
+            searchResults.addAll(webSearchService.retrieve(HARD_CODED_USER_ID, query, 3));
             LOGGER.debug("Retrieved documents: {}", searchResults);
         });
         return searchResults;

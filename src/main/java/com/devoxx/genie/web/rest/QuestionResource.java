@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.constraints.NotNull;
 
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
+
 @RestController
 @RequestMapping("/api")
 public class QuestionResource {
@@ -25,12 +27,9 @@ public class QuestionResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(QuestionResource.class);
 
     private final QuestionService questionService;
-    private final UserService userService;
 
-    public QuestionResource(final QuestionService questionService,
-                            final UserService userService) {
+    public QuestionResource(final QuestionService questionService) {
         this.questionService = questionService;
-        this.userService = userService;
     }
 
     /**
@@ -44,11 +43,7 @@ public class QuestionResource {
 
         LOGGER.debug("Received question: {}", chatModelDTO);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException("USER_NOT_FOUND", "USER", "USER_NOT_FOUND_CODE"));
-
-        chatModelDTO.setUserId(user.getId());
+        chatModelDTO.setUserId(HARD_CODED_USER_ID);
 
         try {
             InteractionDTO interactionDTO =

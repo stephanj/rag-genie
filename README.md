@@ -124,12 +124,12 @@ You can pass to the application any configuration parameter as described in [Spr
 
 One mandatory env variable is GENIE_SECURITY_KEY_SECRET which is used to encrypt the API keys into the database.
 
-The length of this key should be 32 characters (for 256-bit key) to work correctly with the AES encryption algorithm.
+The length of this key should be 24 characters (for 256-bit key) to work correctly with the AES encryption algorithm.
 
-The following command will create a 32 characters keys
+The following command will create a 24 characters keys
 
 ```
-openssl rand -base64 32
+openssl rand -base64 24
 ``` 
 
 ### Start Genie

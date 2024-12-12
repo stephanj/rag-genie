@@ -7,6 +7,7 @@ import com.devoxx.genie.repository.ContentRepository;
 import com.devoxx.genie.repository.EmbeddingModelReferenceRepository;
 import com.devoxx.genie.repository.UserRepository;
 import com.devoxx.genie.service.dto.DocumentDTO;
+import com.devoxx.genie.service.dto.DocumentWithEmbeddingDTO;
 import com.devoxx.genie.service.dto.VectorDocumentDTO;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
@@ -83,9 +84,8 @@ class DocumentServiceTest {
 
     @Test
     void findAllContentEmbeddingsForUserId() {
-        float[][] embeddings =
-            documentService.findAllContentEmbeddingsForUserId(384, 3L, 3L);
-        assertThat(embeddings).isNotNull();
+        List<DocumentWithEmbeddingDTO> allContentEmbeddingsForUserId = documentService.findAllContentEmbeddingsForUserId(384, 3L, 3L);
+        assertThat(allContentEmbeddingsForUserId).isNotNull();
     }
 
     // Not really sure why this is failing...

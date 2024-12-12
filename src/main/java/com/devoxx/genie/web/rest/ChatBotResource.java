@@ -1,13 +1,10 @@
 package com.devoxx.genie.web.rest;
 
-import com.devoxx.genie.domain.User;
 import com.devoxx.genie.service.ChatModelService;
 import com.devoxx.genie.service.EmbeddingModelService;
 import com.devoxx.genie.service.LanguageModelService;
 import com.devoxx.genie.service.dto.ChatModelDTO;
-import com.devoxx.genie.service.user.UserService;
 import com.devoxx.genie.web.rest.chatbot.Assistant;
-import com.devoxx.genie.web.rest.errors.BadRequestAlertException;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
@@ -29,32 +26,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
+
 @RestController
 @RequestMapping("/api")
 public class ChatBotResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatBotResource.class);
 
-    private final UserService userService;
     private final EmbeddingModelService embeddingModelService;
     private final LanguageModelService languageModelService;
     private final EmbeddingStore<TextSegment> embeddingStore384;
-    private final EmbeddingStore<TextSegment> embeddingStore512;
-    private final EmbeddingStore<TextSegment> embeddingStore1024;
     private final ChatModelService chatModelService;
 
-    public ChatBotResource(UserService userService,
-                           EmbeddingModelService embeddingModelService,
+    public ChatBotResource(EmbeddingModelService embeddingModelService,
                            LanguageModelService languageModelService,
                            @Qualifier("dbEmbeddingStore384") EmbeddingStore<TextSegment> embeddingStore384,
                            @Qualifier("dbEmbeddingStore512") EmbeddingStore<TextSegment> embeddingStore512,
                            @Qualifier("dbEmbeddingStore1024") EmbeddingStore<TextSegment> embeddingStore1024, ChatModelService chatModelService) {
-        this.userService = userService;
         this.embeddingModelService = embeddingModelService;
         this.languageModelService = languageModelService;
         this.embeddingStore384 = embeddingStore384;
-        this.embeddingStore512 = embeddingStore512;
-        this.embeddingStore1024 = embeddingStore1024;
         this.chatModelService = chatModelService;
     }
 
@@ -68,12 +60,9 @@ public class ChatBotResource {
 
         LOGGER.debug("REST request to chat with the bot: {}", chatModelDTO.getQuestion());
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException("USER_NOT_FOUND", "USER", "USER_NOT_FOUND_CODE"));
-        chatModelDTO.setUserId(user.getId());
+        chatModelDTO.setUserId(HARD_CODED_USER_ID);
 
-        EmbeddingModel embeddingModel = embeddingModelService.getEmbeddingModelByUserIdAndRefId(user.getId(), chatModelDTO.getEmbeddingModelRefId())
+        EmbeddingModel embeddingModel = embeddingModelService.getEmbeddingModelByUserIdAndRefId(HARD_CODED_USER_ID, chatModelDTO.getEmbeddingModelRefId())
             .orElseThrow(() -> new IllegalArgumentException("Embedding model not found"));
 
         chatModelDTO.setLanguageModelDTO(languageModelService.findById(chatModelDTO.getLanguageModelDTO().getId()));

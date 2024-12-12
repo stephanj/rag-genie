@@ -3,7 +3,6 @@ package com.devoxx.genie.web.rest;
 import com.devoxx.genie.domain.User;
 import com.devoxx.genie.service.InteractionService;
 import com.devoxx.genie.service.dto.InteractionDTO;
-import com.devoxx.genie.service.user.UserService;
 import com.devoxx.genie.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
 import static com.devoxx.genie.web.rest.ContentResource.USER_NOT_FOUND;
 import static com.devoxx.genie.web.rest.ContentResource.USER_NOT_FOUND_CODE;
 
@@ -22,12 +22,9 @@ public class InteractionResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(InteractionResource.class);
 
     private final InteractionService interactionService;
-    private final UserService userService;
 
-    public InteractionResource(InteractionService interactionService,
-                               UserService userService) {
+    public InteractionResource(InteractionService interactionService) {
         this.interactionService = interactionService;
-        this.userService = userService;
     }
 
     @GetMapping("/interaction")
@@ -35,15 +32,11 @@ public class InteractionResource {
                                                        Pageable pageable) {
         LOGGER.debug("Get all interactions with optional filter {}", filterLanguageModelId);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
-        if (filterLanguageModelId == null) {
-            return ResponseEntity.ok(interactionService.findAllByUserId(pageable, user.getId()).getContent());
+          if (filterLanguageModelId == null) {
+            return ResponseEntity.ok(interactionService.findAllByUserId(pageable, HARD_CODED_USER_ID).getContent());
         }
 
-        List<InteractionDTO> list = interactionService.findAllByUserId(Pageable.unpaged(), user.getId()).getContent().stream()
+        List<InteractionDTO> list = interactionService.findAllByUserId(Pageable.unpaged(), HARD_CODED_USER_ID).getContent().stream()
             .filter(interaction -> interaction.getLanguageModel().getId().equals(filterLanguageModelId))
             .toList();
 
@@ -54,11 +47,7 @@ public class InteractionResource {
     public ResponseEntity<InteractionDTO> getById(@PathVariable Long id) {
         LOGGER.debug("Get interaction by id: {}", id);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
-        return interactionService.findByIdAndUserId(id, user.getId())
+        return interactionService.findByIdAndUserId(id, HARD_CODED_USER_ID)
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
@@ -67,11 +56,7 @@ public class InteractionResource {
     public ResponseEntity<List<InteractionDTO>> delete(@PathVariable Long id) {
         LOGGER.debug("Delete interaction by id: {}", id);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
-        interactionService.delete(id, user.getId());
+        interactionService.delete(id, HARD_CODED_USER_ID);
         return ResponseEntity.ok().build();
     }
 
@@ -79,11 +64,7 @@ public class InteractionResource {
     public ResponseEntity<Object> deleteAll() {
         LOGGER.debug("Delete all user interactions");
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
-        interactionService.deleteAllForUserId(user.getId());
+        interactionService.deleteAllForUserId(HARD_CODED_USER_ID);
         return ResponseEntity.ok().build();
     }
 }

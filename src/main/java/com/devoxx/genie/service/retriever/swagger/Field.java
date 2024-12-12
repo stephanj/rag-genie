@@ -1,9 +1,17 @@
 package com.devoxx.genie.service.retriever.swagger;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
 
+@Setter
+@Getter
 public class Field implements Serializable {
 
     @Serial
@@ -12,31 +20,15 @@ public class Field implements Serializable {
     private String name;
     private String parentPath;
 
-    public Field(String name, String parentPath) {
-        // Normalize the path to ignore array indices and 'root[]'
+    @JsonCreator
+    public Field(@JsonProperty("name") String name, @JsonProperty("parentPath") String parentPath) {
         this.name = name;
         this.parentPath = normalizePath(parentPath);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getParentPath() {
-        return parentPath;
-    }
-
-    public void setParentPath(String parentPath) {
-        this.parentPath = parentPath;
-    }
-
-    private String normalizePath(String path) {
+    private @NotNull String normalizePath(String path) {
         // Remove specific array indices and empty array brackets '[]'
-        path = path.replaceAll("\\[\\d+\\]|\\[\\]", "");
+        path = path.replaceAll("\\[\\d+]|\\[]", "");
         // Remove leading '.' that may appear after removals
         if (path.startsWith(".")) {
             path = path.substring(1);

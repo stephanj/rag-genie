@@ -60,7 +60,7 @@ public class SimilarityService {
             .queryEmbedding(embeddedQuery)
             .maxResults(chatModelDTO.getMaxResults())
             .minScore(chatModelDTO.getMinScore())
-            .filter(metadataKey("userId").isEqualTo(chatModelDTO.getUserId()))
+            // .filter(metadataKey("userId").isEqualTo(chatModelDTO.getUserId()))
             .build();
 
         EmbeddingStore<TextSegment> embeddingStore = switch (embeddingModelReferenceDTOById.getDimSize()) {

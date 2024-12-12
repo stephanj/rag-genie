@@ -4,6 +4,7 @@ import com.devoxx.genie.service.dto.*;
 import com.devoxx.genie.service.score.SimilarityScore;
 import com.devoxx.genie.service.splitter.SimilarityService;
 import dev.langchain4j.data.message.AiMessage;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
 
 @Service
 public class EvaluationLogicService {
@@ -87,10 +90,10 @@ public class EvaluationLogicService {
      * @param durationInMs the duration in milliseconds
      * @param rerank the rerank flag
      */
-    private void createEvaluationResultItem(ChatModelDTO chatModelDTO,
+    private void createEvaluationResultItem(@NotNull ChatModelDTO chatModelDTO,
                                             EvaluationDTO evaluationDTO,
                                             String answer,
-                                            GenieResponse<AiMessage> response,
+                                            @NotNull GenieResponse<AiMessage> response,
                                             List<DocumentDTO> usedDocuments,
                                             Long durationInMs,
                                             Boolean rerank) {
@@ -105,7 +108,7 @@ public class EvaluationLogicService {
         result.setEmbeddingModelReference(embeddingModelService.getEmbeddingModelReferenceDTOById(chatModelDTO.getEmbeddingModelRefId()));
 
         result.setRerank(rerank);
-        result.setUserId(chatModelDTO.getUserId());
+        result.setUserId(HARD_CODED_USER_ID);
         result.setLanguageModel(chatModelDTO.getLanguageModelDTO());
         result.setEvaluation(evaluationDTO);
 

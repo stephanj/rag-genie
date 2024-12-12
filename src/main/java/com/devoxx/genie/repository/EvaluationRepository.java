@@ -15,7 +15,9 @@ public interface EvaluationRepository extends JpaRepository<Evaluation, Long> {
     @Query("SELECT e FROM Evaluation e WHERE e.id in :ids")
     List<Evaluation> findAllById(@Param("ids") List<Long> ids);
 
-    Page<Evaluation> findAllByUserId(Long userId, Pageable pageable);
+    @Query("SELECT e FROM Evaluation e WHERE e.user.id = :userId")
+    Page<Evaluation> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    Optional<Evaluation> findByIdAndUserId(Long id, Long userId);
+    @Query("SELECT e FROM Evaluation e WHERE e.id = :id AND e.user.id = :userId")
+    Optional<Evaluation> findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
 }

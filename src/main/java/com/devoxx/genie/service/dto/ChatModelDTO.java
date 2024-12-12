@@ -25,6 +25,7 @@ public class ChatModelDTO {
     @Setter
     private String prompt;
     private Long embeddingModelRefId;
+    private Long modelId;
     private String embeddingModelRefName;
     @Setter
     private LanguageModelDTO languageModelDTO;

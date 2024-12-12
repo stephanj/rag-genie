@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 public class EvaluationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EvaluationService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(EvaluationService.class);
     private final EvaluationRepository evaluationRepository;
     private final EvaluationMapper evaluationMapper;
 
@@ -28,7 +28,7 @@ public class EvaluationService {
 
     @Transactional
     public EvaluationDTO save(EvaluationDTO evaluationDTO) {
-        LOGGER.debug("Request to save evaluation : {}", evaluationDTO);
+        LOG.debug("Request to save evaluation : {}", evaluationDTO);
 
         Evaluation evaluation = evaluationMapper.toEntity(evaluationDTO);
         Evaluation savedEvaluation = evaluationRepository.save(evaluation);
@@ -37,14 +37,14 @@ public class EvaluationService {
 
     @Transactional(readOnly = true)
     public Page<EvaluationDTO> findAllByUserId(Long userId, Pageable pageable) {
-        LOGGER.debug("Request to get all Evaluations");
+        LOG.debug("Request to get all Evaluations");
         return evaluationRepository.findAllByUserId(userId, pageable)
             .map(evaluationMapper::toDto);
     }
 
     @Transactional(readOnly = true)
     public List<EvaluationDTO> findAllById(List<Long> ids) {
-        LOGGER.debug("Request to get all Evaluations");
+        LOG.debug("Request to get all Evaluations");
         return evaluationRepository.findAllById(ids)
             .stream()
             .map(evaluationMapper::toDto)
@@ -53,7 +53,7 @@ public class EvaluationService {
 
     @Transactional(readOnly = true)
     public EvaluationDTO findById(Long id) {
-        LOGGER.debug("Request to get Evaluation : {}", id);
+        LOG.debug("Request to get Evaluation : {}", id);
         return evaluationRepository.findById(id)
             .map(evaluationMapper::toDto)
             .orElseThrow(() -> new RuntimeException("Evaluation not found"));
@@ -61,7 +61,7 @@ public class EvaluationService {
 
     @Transactional
     public void deleteByIdForUserId(Long userId, Long id) {
-        LOGGER.debug("Request to delete Evaluation : {}", id);
+        LOG.debug("Request to delete Evaluation : {}", id);
         evaluationRepository.findByIdAndUserId(id, userId)
             .ifPresentOrElse(evaluationRepository::delete, () -> {
                 throw new RuntimeException("Evaluation not found");

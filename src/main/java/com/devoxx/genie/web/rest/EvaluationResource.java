@@ -1,12 +1,9 @@
 package com.devoxx.genie.web.rest;
 
-import com.devoxx.genie.domain.User;
 import com.devoxx.genie.service.EvaluationLogicService;
 import com.devoxx.genie.service.EvaluationService;
 import com.devoxx.genie.service.dto.ChatModelDTO;
 import com.devoxx.genie.service.dto.EvaluationDTO;
-import com.devoxx.genie.service.user.UserService;
-import com.devoxx.genie.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.devoxx.genie.web.rest.ContentResource.USER_NOT_FOUND;
-import static com.devoxx.genie.web.rest.ContentResource.USER_NOT_FOUND_CODE;
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
 
 @RestController
 @RequestMapping("/api")
@@ -27,14 +23,11 @@ public class EvaluationResource {
 
     private final EvaluationService evaluationService;
     private final EvaluationLogicService evaluationLogicService;
-    private final UserService userService;
 
     public EvaluationResource(EvaluationService evaluationService,
-                              EvaluationLogicService evaluationLogicService,
-                              UserService userService) {
+                              EvaluationLogicService evaluationLogicService) {
         this.evaluationService = evaluationService;
         this.evaluationLogicService = evaluationLogicService;
-        this.userService = userService;
     }
 
     /**
@@ -47,11 +40,8 @@ public class EvaluationResource {
     public ResponseEntity<EvaluationDTO> save(@RequestBody EvaluationDTO evaluationDTO) {
         LOGGER.debug("Adding evaluation: {}", evaluationDTO);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
-        evaluationDTO.setUserId(user.getId());
+        // We hard-code user id because this is an anonymous version of Rag Genie
+        evaluationDTO.setUserId(HARD_CODED_USER_ID);
 
         EvaluationDTO savedEntry = evaluationService.save(evaluationDTO);
         return ResponseEntity.ok().body(savedEntry);
@@ -67,11 +57,8 @@ public class EvaluationResource {
     public ResponseEntity<EvaluationDTO> update(@RequestBody EvaluationDTO evaluationDTO) {
         LOGGER.debug("Adding evaluation : {}", evaluationDTO);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
-        evaluationDTO.setUserId(user.getId());
+        // We hard-code user id because this is an anonymous version of Rag Genie
+        evaluationDTO.setUserId(HARD_CODED_USER_ID);
 
         EvaluationDTO savedEntry = evaluationService.save(evaluationDTO);
         return ResponseEntity.ok().body(savedEntry);
@@ -87,11 +74,9 @@ public class EvaluationResource {
     public ResponseEntity<List<EvaluationDTO>> getAll(Pageable pageable) {
         LOGGER.debug("Get all evaluations");
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
+        // We hard-code user id because this is an anonymous version of Rag Genie
+        List<EvaluationDTO> entries = evaluationService.findAllByUserId(HARD_CODED_USER_ID, pageable).getContent();
 
-        List<EvaluationDTO> entries = evaluationService.findAllByUserId(user.getId(), pageable).getContent();
         return ResponseEntity.ok().body(entries);
     }
 
@@ -105,13 +90,10 @@ public class EvaluationResource {
     public ResponseEntity<EvaluationDTO> getById(@PathVariable Long id) {
         LOGGER.debug("Get all evaluations");
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
+        // We hard-code user id because this is an anonymous version of Rag Genie
         EvaluationDTO entry = evaluationService.findById(id);
 
-        if (entry.getUserId().equals(user.getId())) {
+        if (entry.getUserId().equals(HARD_CODED_USER_ID)) {
             return ResponseEntity.ok().body(entry);
         }
 
@@ -128,20 +110,22 @@ public class EvaluationResource {
     public ResponseEntity<Object> deleteById(@PathVariable Long id) {
         LOGGER.debug("Deleting evaluation: {}", id);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
+        // We hard-code user id because this is an anonymous version of Rag Genie
 
-        evaluationService.deleteByIdForUserId(user.getId(), id);
+        evaluationService.deleteByIdForUserId(HARD_CODED_USER_ID, id);
         return ResponseEntity.ok().build();
     }
 
     /**
      * POST /evaluation/state start evaluation process
-     * @param models          the models
-     * @param chatModelDTO    the chat model DTO
-     * @param evaluations     the evaluations
-     * @return nothing
+     * @param models the models to use
+     * @param temperature the temperature
+     * @param embedId the embedding model id
+     * @param minScore the minimum score
+     * @param maxOutputTokens the maximum output tokens
+     * @param size the size
+     * @param evaluations the evaluations
+     * @return the ResponseEntity with status 200 (OK)
      */
     @PostMapping(path = "/evaluation/start", consumes = MediaType.ALL_VALUE)
     public ResponseEntity<Void> startEvaluations(@RequestParam String models,

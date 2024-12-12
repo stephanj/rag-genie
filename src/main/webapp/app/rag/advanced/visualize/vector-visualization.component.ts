@@ -38,10 +38,11 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
 
   private renderer!: THREE.WebGLRenderer;
   private camera!: THREE.PerspectiveCamera;
-  private raycaster!: THREE.Raycaster;
+  private rayCaster!: THREE.Raycaster;
   private mouse!: THREE.Vector2;
   private label!: HTMLElement;
   private spheres: { sphere: THREE.Mesh, label: string }[] = [];
+  private documents: (string | any)[] = [];
 
   private scene = new THREE.Scene();
 
@@ -106,8 +107,9 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
           this.vectorVisualizationService.getEmbeddings(this.dimension, c.id).subscribe({
             next: (embeddings) => {
               if (embeddings.body) {
-                const { points } = this.processVectorData(embeddings.body);
-
+                this.documents = embeddings.body.map((d) => d.text || []);
+                const vectors = embeddings.body.map((d) => d.embedding || []);
+                const { points } = this.processVectorData(vectors);
                 const color = this.getDistinctColors();
                 this.contentSelection.push({label: c.name, value: color});
                 this.addPoints(points, color);
@@ -129,7 +131,7 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
     this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10_000);
     // 0x121212 is a dark grey color
     this.renderer.setClearColor(0x121212, 1.0);
-    this.raycaster = new THREE.Raycaster();
+    this.rayCaster = new THREE.Raycaster();
     this.mouse = new THREE.Vector2();
 
     this.label = this.renderer2.createElement('div');
@@ -147,14 +149,14 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
   private addPoints(points: {x: number, y: number, z: number}[], color: ColorRepresentation): void {
 
     points.forEach((point, index) => {
-        const geometry = new THREE.SphereGeometry(0.07);
-        const material = new THREE.MeshBasicMaterial({ color: color});
-        const sphere = new THREE.Mesh(geometry, material);
-        sphere.position.set(point.x, -point.y, point.z);
-        geometry.computeBoundingSphere();
-        sphere.updateMatrixWorld();
-        this.spheres.push( {sphere: sphere, label: `dummy label ${index}`});
-        this.scene.add(sphere);
+      const geometry = new THREE.SphereGeometry(0.04);
+      const material = new THREE.MeshBasicMaterial({ color: color});
+      const sphere = new THREE.Mesh(geometry, material);
+      sphere.position.set(point.x, -point.y, point.z);
+      geometry.computeBoundingSphere();
+      sphere.updateMatrixWorld();
+      this.spheres.push( {sphere: sphere, label: this.documents[index]});
+      this.scene.add(sphere);
     });
   }
 
@@ -223,16 +225,18 @@ export class VectorVisualizationComponent implements OnInit, OnDestroy {
     this.mouse.y = -(dy / rect.height) * 2 + 1;
 
     // Update the ray caster with the camera and mouse position
-    this.raycaster.setFromCamera(this.mouse, this.camera);
+    this.rayCaster.setFromCamera(this.mouse, this.camera);
+
     // Calculate objects intersecting the picking ray
-    const intersects = this.raycaster.intersectObjects(this.scene.children);
+    const intersects = this.rayCaster.intersectObjects(this.scene.children);
 
     if (intersects.length > 0) {
       const intersect = intersects[0];
-      const sphereData = this.spheres.find(({ sphere }) => sphere === intersect.object);
+      const sphereData =
+        this.spheres.find(({ sphere }) => sphere === intersect.object);
 
-      if(sphereData) {
-        const { sphere, label } = sphereData
+      if (sphereData) {
+        const { sphere, label } = sphereData;
         this.label.innerHTML = `Label: ${label}, x: ${sphere.position.x.toFixed(2)}, y: ${sphere.position.y.toFixed(2)}`;
         this.label.style.left = `${event.clientX + 10}px`;
         this.label.style.top = `${event.clientY + 10}px`;

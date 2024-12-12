@@ -1,13 +1,10 @@
 package com.devoxx.genie.web.rest;
 
-import com.devoxx.genie.domain.User;
 import com.devoxx.genie.service.ContentService;
 import com.devoxx.genie.service.LanguageModelService;
 import com.devoxx.genie.service.QuestionService;
 import com.devoxx.genie.service.dto.*;
 import com.devoxx.genie.service.dto.enumeration.DocumentType;
-import com.devoxx.genie.service.user.UserService;
-import com.devoxx.genie.web.rest.errors.BadRequestAlertException;
 import com.google.common.util.concurrent.AtomicDouble;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -27,8 +24,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.devoxx.genie.web.rest.ContentResource.USER_NOT_FOUND;
-import static com.devoxx.genie.web.rest.ContentResource.USER_NOT_FOUND_CODE;
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
 
 record AnalysisPrompt(String userPrompt, String systemPrompt) {
 }
@@ -40,7 +36,6 @@ public class AnalyseResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalyseResource.class);
     private final ContentService contentService;
     private final QuestionService questionService;
-    private final UserService userService;
     private final LanguageModelService languageModelService;
     private final List<AnalysisPrompt> prompts = new ArrayList<>();
 
@@ -49,16 +44,13 @@ public class AnalyseResource {
      * @param contentService   the content service
      * @param questionService  the question service
      * @param languageModelService the language model service
-     * @param userService the user service
      */
     public AnalyseResource(ContentService contentService,
                            QuestionService questionService,
-                           LanguageModelService languageModelService,
-                           UserService userService) {
+                           LanguageModelService languageModelService) {
         this.contentService = contentService;
         this.questionService = questionService;
         this.languageModelService = languageModelService;
-        this.userService = userService;
         createPrompts();
     }
 
@@ -129,10 +121,6 @@ public class AnalyseResource {
                                                  @RequestParam boolean includeRelatedCode) {
         LOGGER.debug("REST request to analyse content: {}", contentId);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() ->
-                new BadRequestAlertException("USER_NOT_FOUND", "USER", "USER_NOT_FOUND_CODE"));
-
         ContentDTO byId = contentService.findById(contentId);
 
         List<Long> contentIds = new ArrayList<>();
@@ -170,7 +158,7 @@ public class AnalyseResource {
         }
 
         ChatModelDTO chatModelDTO = ChatModelDTO.builder()
-            .userId(user.getId())
+            .userId(HARD_CODED_USER_ID)
             .question("")
             .prompt(prompt)
             .languageModelDTO(languageModelService.findById(modelId))
@@ -204,13 +192,10 @@ public class AnalyseResource {
 
         LOGGER.debug("REST request to get analysis cost: {}", contentId);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException(USER_NOT_FOUND, "USER", USER_NOT_FOUND_CODE));
-
         final AtomicDouble inputTokenSize = new AtomicDouble(0.0);
         if (contentId == null) {
             // Get all content
-            contentService.findAllByUserId(Pageable.unpaged(), user.getId())
+            contentService.findAllByUserId(Pageable.unpaged(), HARD_CODED_USER_ID)
                 .forEach(contentDTO ->
                     inputTokenSize.addAndGet(getDocumentTokenSize(contentDTO.getId(), true)));
         } else {

@@ -4,12 +4,14 @@ import com.devoxx.genie.domain.Content;
 import com.devoxx.genie.domain.EmbeddingModelReference;
 import com.devoxx.genie.repository.ContentRepository;
 import com.devoxx.genie.service.dto.DocumentDTO;
+import com.devoxx.genie.service.dto.DocumentWithEmbeddingDTO;
 import com.devoxx.genie.service.dto.VectorDocumentDTO;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.langchain4j.data.document.Metadata;
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
+
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +22,9 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+
 import org.springframework.jdbc.core.JdbcTemplate;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.compress.utils.ArchiveUtils.sanitize;
 
@@ -268,7 +273,7 @@ public class DocumentService {
      * @return the embeddings
      */
     @Transactional(readOnly = true)
-    public float[][] findAllContentEmbeddingsForUserId(Integer dimension, Long contentId, Long userId) {
+    public List<DocumentWithEmbeddingDTO> findAllContentEmbeddingsForUserId(Integer dimension, Long contentId, Long userId) {
         LOGGER.debug("REST request to get all documents");
 
         String tableName = GENIE_DOCUMENT_TABLE_PREFIX + dimension;
@@ -278,29 +283,16 @@ public class DocumentService {
             AND metadata ->> 'contentId' = CAST(%d AS TEXT)
             """, tableName, userId, contentId);
 
-        List<DocumentDTO> documents = getDocumentsWithEmbeddings(sql);
-
-        float[][] embeddings = new float[documents.size()][];
-
-        int index = 0;
-        for (DocumentDTO document : documents) {
-            LOGGER.debug("Document: {}", document);
-
-            String embeddingValues = document.getEmbedding();
-
-            if (embeddingValues.isEmpty()) {
-                LOGGER.info("Embedding with id {} is empty", document.getId());
-                continue;
-            }
-
-            float[] floats = convertStringToFloatArray(embeddingValues);
-            embeddings[index++] = floats;
-        }
-        return embeddings;
+        return getDocumentsWithEmbeddings(sql).stream()
+            .map(documentDTO -> DocumentWithEmbeddingDTO.builder()
+                .text(documentDTO.getText())
+                .embedding(convertStringToFloatArray(documentDTO.getEmbedding()))
+                .build())
+            .toList();
     }
 
     /**
-     * Convert string of floats to float array
+     * Convert string of floats to Float Array
      *
      * @param input the input string
      * @return the float array

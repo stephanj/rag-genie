@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 
 /**
  * A DTO for the LanguageModelDTO entity.
@@ -20,7 +21,10 @@ public class LanguageModelDTO implements Serializable {
     private String name;
     private String baseUrl;
     private String description;
+    private String label;
+    private String type;
     private String version;
+    private Integer size;
     private LanguageModelType modelType;
     private double costInput1M;
     private double costOutput1M;
@@ -29,4 +33,5 @@ public class LanguageModelDTO implements Serializable {
     private Integer contextWindow;
     private Boolean apiKeyRequired;
     private String website;
+    private ZonedDateTime createdOn;
 }

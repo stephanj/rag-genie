@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.devoxx.genie.security.AuthoritiesConstants.HARD_CODED_USER_ID;
 import static com.devoxx.genie.web.rest.util.DimensionUtil.isInvalidDimension;
 import static com.devoxx.genie.web.rest.util.PaginationUtil.TOTAL_COUNT;
 
@@ -37,16 +38,13 @@ public class VectorDocumentResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(VectorDocumentResource.class);
     public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
     public static final String USERNOTFOUND = "usernotfound";
-    private final UserService userService;
     private final DocumentService documentService;
     private final ContentService contentService;
     private final ReRankService reRankService;
 
-    public VectorDocumentResource(UserService userService,
-                                  ContentService contentService,
+    public VectorDocumentResource(ContentService contentService,
                                   DocumentService documentService,
                                   ReRankService reRankService) {
-        this.userService = userService;
         this.contentService = contentService;
         this.documentService = documentService;
         this.reRankService = reRankService;
@@ -66,10 +64,7 @@ public class VectorDocumentResource {
 
         LOGGER.debug("REST Store documents using embedding model {} with chunks: {}", embeddingModelId, chunks);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException(USER_NOT_FOUND, "USER", USERNOTFOUND));
-
-        documentService.save(user.getId(), contentId, chunks, embeddingModelId);
+        documentService.save(HARD_CODED_USER_ID, contentId, chunks, embeddingModelId);
 
         return ResponseEntity.ok().build();
     }
@@ -86,10 +81,7 @@ public class VectorDocumentResource {
 
         LOGGER.debug("REST request to store chunks: {}", vectorDocument);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException(USER_NOT_FOUND, "USER", USERNOTFOUND));
-
-        documentService.update(user.getId(), dimension, vectorDocument);
+        documentService.update(HARD_CODED_USER_ID, dimension, vectorDocument);
 
         return ResponseEntity.ok().build();
     }
@@ -110,10 +102,7 @@ public class VectorDocumentResource {
             return ResponseEntity.badRequest().build();
         }
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException(USER_NOT_FOUND, "USER", USERNOTFOUND));
-
-        Page<DocumentDTO> userDocuments = documentService.getByUserIdAndDimension(user.getId(), dimension, pageable);
+        Page<DocumentDTO> userDocuments = documentService.getByUserIdAndDimension(HARD_CODED_USER_ID, dimension, pageable);
 
         userDocuments.forEach(contentService::addContentInfo);
 
@@ -152,10 +141,7 @@ public class VectorDocumentResource {
     public ResponseEntity<Integer> totalDocumentsForUser() {
         LOGGER.debug("REST request get total documents count for user");
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException(USER_NOT_FOUND, "USER", USERNOTFOUND));
-
-        int size = documentService.getByUserIdAndDimension(user.getId()).size();
+        int size = documentService.getByUserIdAndDimension(HARD_CODED_USER_ID).size();
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Total-Count", size + "");
         return ResponseEntity.ok().headers(headers).build();
@@ -178,13 +164,10 @@ public class VectorDocumentResource {
 
         LOGGER.debug("REST request to get {} with min score {} chunks for query: {}", maxResults, minScore, question);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException(USER_NOT_FOUND, "USER", USERNOTFOUND));
-
         List<EmbeddingMatch<TextSegment>> userResults =
-            documentService.findRelevantDocuments(user.getId(), embedId, question, maxResults, minScore)
+            documentService.findRelevantDocuments(HARD_CODED_USER_ID, embedId, question, maxResults, minScore)
                 .stream()
-                .filter(match -> match.embedded().metadata().get("userId").equals(user.getId().toString()))
+                .filter(match -> match.embedded().metadata().get("userId").equals(HARD_CODED_USER_ID.toString()))
                 .toList();
 
         JsonArray responseArray;
@@ -215,10 +198,7 @@ public class VectorDocumentResource {
                                                                     @RequestParam String query) {
         LOGGER.debug("REST request to filter documents by query: {}", query);
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException(USER_NOT_FOUND, "USER", USERNOTFOUND));
-
-        List<DocumentDTO> foundDocuments = documentService.filterDocumentsByQuery(user.getId(), dimension, query);
+        List<DocumentDTO> foundDocuments = documentService.filterDocumentsByQuery(HARD_CODED_USER_ID, dimension, query);
 
         foundDocuments.forEach(contentService::addContentInfo);
         documentService.addEmbeddingInfo(foundDocuments);
@@ -241,11 +221,8 @@ public class VectorDocumentResource {
             return ResponseEntity.badRequest().body("Invalid dimension");
         }
 
-        User user = userService.getAdminUser()
-            .orElseThrow(() -> new BadRequestAlertException(USER_NOT_FOUND, "USER", USERNOTFOUND));
-
         try {
-            documentService.deleteAllByDimensionForUserId(dimension, user.getId());
+            documentService.deleteAllByDimensionForUserId(dimension, HARD_CODED_USER_ID);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

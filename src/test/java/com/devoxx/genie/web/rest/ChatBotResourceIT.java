@@ -74,7 +74,7 @@ class ChatBotResourceIT extends AbstractMVCContextIT {
         AllMiniLmL6V2EmbeddingModel allMiniLmL6V2EmbeddingModel = new AllMiniLmL6V2EmbeddingModel();
 
         // Split content into chunks, embed and store them
-        splitterService.split(SplitterStrategy.PARAGRAPH, savedContent.getId().toString(), 550, 25)
+        splitterService.split(SplitterStrategy.PARAGRAPH, savedContent.getId().toString(), savedContent.getValue(), 550, 25)
             .forEach(chunk -> {
                 Response<Embedding> embed = allMiniLmL6V2EmbeddingModel.embed(chunk);
                 TextSegment textSegment = new TextSegment(chunk, new Metadata());

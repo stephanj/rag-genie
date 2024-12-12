@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Getter
@@ -18,4 +19,5 @@ public class EvaluationDTO implements Serializable {
     private String answer;
     public List<String> keywords;
     public Long userId;
+    public ZonedDateTime createdOn;
 }
